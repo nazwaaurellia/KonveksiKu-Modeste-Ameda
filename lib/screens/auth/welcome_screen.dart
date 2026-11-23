@@ -90,9 +90,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
         i,
         Transform.rotate(
           angle: angle,
+          filterQuality: FilterQuality.high,
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(22),
+              borderRadius: BorderRadius.circular(18),
               boxShadow: const [
                 BoxShadow(
                     color: Color.fromRGBO(0, 0, 0, 0.28),
@@ -101,9 +102,12 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(22),
+              borderRadius: BorderRadius.circular(18),
               child: SizedBox.expand(
-                child: Image.memory(bytes, fit: BoxFit.cover, gaplessPlayback: true),
+                child: Image.memory(bytes,
+                    fit: BoxFit.cover,
+                    gaplessPlayback: true,
+                    filterQuality: FilterQuality.high),
               ),
             ),
           ),
@@ -134,9 +138,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               child: SafeArea(
                 child: LayoutBuilder(builder: (context, box) {
                   final w = box.maxWidth;
-                  final logoW = math.min(w * 0.58, 280.0);
+                  final logoW = math.min(w * 0.46, 200.0);
                   return Column(children: [
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 8),
                     // Logo (PNG transparan) + cahaya krem lembut agar terbaca
                     _appear(
                       0,
@@ -154,17 +158,20 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                               ], stops: const [0.0, 0.62, 1.0]),
                             ),
                           ),
-                          Image.memory(_logo, width: logoW, fit: BoxFit.contain),
+                          Image.memory(_logo,
+                              width: logoW,
+                              fit: BoxFit.contain,
+                              filterQuality: FilterQuality.high),
                         ]),
                       ),
                     ),
                     // Kolase foto: 2 kolom, selang-seling
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 4, 20, 0),
+                        padding: const EdgeInsets.fromLTRB(22, 4, 22, 0),
                         child: LayoutBuilder(builder: (context, c) {
                           const gap = 14.0;
-                          const stagger = 28.0;
+                          const stagger = 24.0;
                           final colW = (c.maxWidth - gap) / 2;
                           final tileH = (c.maxHeight - stagger - gap * 2) / 3;
                           Widget tile(int col, int row, Uint8List b, double a, int i) =>
@@ -188,7 +195,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     ),
                     // Bar loading + teks
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(40, 14, 40, 18),
+                      padding: const EdgeInsets.fromLTRB(48, 16, 48, 22),
                       child: Column(children: [
                         TweenAnimationBuilder<double>(
                           tween: Tween(begin: 0, end: 1),
@@ -203,7 +210,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                             ),
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 12),
                         const Text(
                           'Menyiapkan halaman Anda…',
                           style: TextStyle(

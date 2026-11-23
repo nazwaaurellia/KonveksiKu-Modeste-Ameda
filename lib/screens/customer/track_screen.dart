@@ -26,7 +26,7 @@ class TrackScreen extends StatelessWidget {
               ? Btn('Bayar DP ${rp(o.dp)}', () => go(context, PaymentScreen(order: o)))
               : Btn('Chat admin', () => toast(context, 'Chat admin belum tersedia di versi demo')),
           children: [
-            Text(o.title, style: h(20)),
+            Text(o.title, style: h(18)),
             Text('#${o.id} · ${o.qty} pcs · dibuat ${o.created}', style: t(10, color: C.muted)),
             const SizedBox(height: 12),
             Timeline(o.timeline, o.step),
@@ -44,7 +44,7 @@ class TrackScreen extends StatelessWidget {
                 ]),
                 const Divider(),
                 Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  Text('Sisa tagihan', style: t(13, w: FontWeight.w800)),
+                  Text('Sisa tagihan', style: t(13, w: FontWeight.w700)),
                   Text(rp(o.remaining), style: h(15, o.remaining > 0 ? C.red : C.green)),
                 ]),
               ]),

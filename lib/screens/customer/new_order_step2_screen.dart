@@ -38,7 +38,7 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
             flex: 4,
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
               Text('Estimasi total', style: t(10, color: C.muted)),
-              FittedBox(fit: BoxFit.scaleDown, child: Text(rp(d.total), style: t(15, w: FontWeight.w800))),
+              FittedBox(fit: BoxFit.scaleDown, child: Text(rp(d.total), style: t(15, w: FontWeight.w700))),
             ]),
           ),
           const SizedBox(width: 10),

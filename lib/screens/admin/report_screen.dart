@@ -16,7 +16,7 @@ class ReportScreen extends StatelessWidget {
               child: Box(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text('Pemasukan', style: t(11, color: C.muted)),
-                  FittedBox(fit: BoxFit.scaleDown, child: Text(jt(s.income), style: t(15, w: FontWeight.w800, color: C.green))),
+                  FittedBox(fit: BoxFit.scaleDown, child: Text(jt(s.income), style: t(14, w: FontWeight.w700, color: C.green))),
                 ]),
               ),
             ),
@@ -25,14 +25,14 @@ class ReportScreen extends StatelessWidget {
               child: Box(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text('Sisa tagihan', style: t(11, color: C.muted)),
-                  FittedBox(fit: BoxFit.scaleDown, child: Text(jt(s.receivable), style: t(15, w: FontWeight.w800, color: C.red))),
+                  FittedBox(fit: BoxFit.scaleDown, child: Text(jt(s.receivable), style: t(14, w: FontWeight.w700, color: C.red))),
                 ]),
               ),
             ),
           ]),
           Box(
             child: SizedBox(
-              height: 130,
+              height: 120,
               child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
                 for (var i = 0; i < 4; i++)
                   Expanded(
@@ -56,16 +56,16 @@ class ReportScreen extends StatelessWidget {
               child: Row(children: [
                 Expanded(
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(o.customer, style: t(13, w: FontWeight.w800)),
+                    Text(o.customer, style: t(13, w: FontWeight.w700)),
                     Text('DP #${o.id} · ${rp(o.dp)}', style: t(10, color: C.muted)),
                   ]),
                 ),
                 SizedBox(
-                  width: 104,
+                  width: 100,
                   child: Btn('Verifikasi', () {
                     s.verifyDp(o);
                     toast(context, 'DP ${o.id} terverifikasi');
-                  }),
+                  }, height: 38),
                 ),
               ]),
             ),

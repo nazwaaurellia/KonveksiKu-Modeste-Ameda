@@ -20,7 +20,7 @@ class AuthShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = pad(context);
-    final logoW = math.min(MediaQuery.sizeOf(context).width * 0.5, 220.0);
+    final logoW = math.min(MediaQuery.sizeOf(context).width * 0.42, 170.0);
     return Scaffold(
       body: FloralBg(
         child: Center(
@@ -28,10 +28,10 @@ class AuthShell extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 520),
             child: SingleChildScrollView(
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              padding: EdgeInsets.fromLTRB(p, MediaQuery.paddingOf(context).top + 32, p, 32),
+              padding: EdgeInsets.fromLTRB(p, MediaQuery.paddingOf(context).top + 36, p, 28),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Center(child: Image.memory(_logoBytes, width: logoW, fit: BoxFit.contain)),
-                const SizedBox(height: 16),
+                const SizedBox(height: 18),
                 ...body,
               ]),
             ),
@@ -50,14 +50,14 @@ class AuthTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 26),
+        padding: const EdgeInsets.only(bottom: 20),
         child: SizedBox(
           width: double.infinity,
           child: Column(children: [
-            Text(title, textAlign: TextAlign.center, style: h(26)),
+            Text(title, textAlign: TextAlign.center, style: h(24)),
             if (subtitle != null)
               Padding(
-                padding: const EdgeInsets.only(top: 8),
+                padding: const EdgeInsets.only(top: 6),
                 child: Text(subtitle!, textAlign: TextAlign.center, style: t(12, color: C.muted)),
               ),
           ]),

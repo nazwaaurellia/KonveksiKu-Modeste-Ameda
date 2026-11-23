@@ -18,17 +18,17 @@ class _ShellState extends State<Shell> {
         body: IndexedStack(index: i, children: widget.pages),
         bottomNavigationBar: NavigationBarTheme(
           data: NavigationBarThemeData(
-            height: 72,
+            height: 66,
             backgroundColor: C.cream,
             surfaceTintColor: Colors.transparent,
             indicatorColor: C.gold.withOpacity(.35),
             labelTextStyle: WidgetStateProperty.resolveWith((s) => TextStyle(
-                  fontSize: 12.5,
+                  fontSize: 11,
                   fontWeight: s.contains(WidgetState.selected) ? FontWeight.w800 : FontWeight.w500,
                   color: s.contains(WidgetState.selected) ? C.brown : C.muted,
                 )),
             iconTheme: WidgetStateProperty.resolveWith((s) => IconThemeData(
-                  size: 26,
+                  size: 23,
                   color: s.contains(WidgetState.selected) ? C.brown : C.muted,
                 )),
           ),

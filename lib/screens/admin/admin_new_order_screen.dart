@@ -52,8 +52,8 @@ class _AdminNewOrderScreenState extends State<AdminNewOrderScreen> {
               Text(rp(unit), style: t(11)),
             ]),
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              Text('Total', style: t(14, w: FontWeight.w800)),
-              Text(rp(total), style: h(18)),
+              Text('Total', style: t(14, w: FontWeight.w700)),
+              Text(rp(total), style: h(16)),
             ]),
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               Text('DP 50% (diterima langsung)', style: t(11, color: C.muted)),

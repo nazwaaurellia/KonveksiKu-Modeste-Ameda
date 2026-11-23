@@ -32,21 +32,21 @@ class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
               onTap: () => setState(() => sel = i),
               child: Container(
                 margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(14),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: sel == i ? C.brown : Colors.transparent, width: 2),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: sel == i ? C.brown : Colors.transparent, width: 1.5),
                 ),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Container(
-                    height: 90,
+                    height: 72,
                     width: double.infinity,
                     decoration: BoxDecoration(color: s.$4.withOpacity(.15), borderRadius: BorderRadius.circular(14)),
-                    child: Icon(s.$3, size: 44, color: s.$4),
+                    child: Icon(s.$3, size: 32, color: s.$4),
                   ),
                   const SizedBox(height: 8),
-                  Text(s.$1, style: t(15, w: FontWeight.w800)),
+                  Text(s.$1, style: t(14, w: FontWeight.w700)),
                   Text(s.$2, style: t(11, color: C.muted)),
                 ]),
               ),

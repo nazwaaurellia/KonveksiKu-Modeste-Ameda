@@ -58,7 +58,7 @@ class OrderDetailScreen extends StatelessWidget {
                 _row('DP dibayar', rp(o.dpPaid)),
                 const Divider(),
                 Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  Text('Sisa tagihan', style: t(13, w: FontWeight.w800)),
+                  Text('Sisa tagihan', style: t(13, w: FontWeight.w700)),
                   Text(rp(o.remaining), style: h(16)),
                 ]),
               ]),

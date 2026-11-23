@@ -52,10 +52,9 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ]),
+        const SizedBox(height: 8),
         Btn('Masuk', _login),
-        const SizedBox(height: 10),
-        Btn('Lanjutkan dengan Google', () => _login('sari@email.com'), light: true),
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
         Center(
           child: InkWell(
             onTap: () => go(context, const RegisterScreen()),
@@ -64,10 +63,6 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Text('Belum punya akun? Daftar', style: t(12, color: C.brown, w: FontWeight.w700)),
             ),
           ),
-        ),
-        Center(
-          child: Text('Tips demo: email berisi "admin" untuk masuk sebagai admin.',
-              textAlign: TextAlign.center, style: t(10, color: C.muted)),
         ),
       ]);
 }

@@ -61,8 +61,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
             ]),
             const Divider(),
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              Text('DP 50%', style: t(14, w: FontWeight.w800)),
-              Text(rp(dp), style: h(18, C.red)),
+              Text('DP 50%', style: t(14, w: FontWeight.w700)),
+              Text(rp(dp), style: h(16, C.red)),
             ]),
           ]),
         ),
@@ -74,7 +74,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         Box(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text('Transfer ke', style: t(10, color: C.muted)),
-            Text('BCA 1234 5678 90', style: h(18)),
+            Text('BCA 1234 5678 90', style: h(16)),
             Text('a.n. Konveksi Maju Jaya', style: t(11, color: C.muted)),
           ]),
         ),

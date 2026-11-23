@@ -22,7 +22,7 @@ void toast(BuildContext c, String m) =>
     ScaffoldMessenger.of(c).showSnackBar(SnackBar(content: Text(m), behavior: SnackBarBehavior.floating));
 
 /// Padding horizontal menyesuaikan lebar layar (HP kecil vs besar).
-double pad(BuildContext c) => MediaQuery.sizeOf(c).width < 360 ? 18 : 24;
+double pad(BuildContext c) => MediaQuery.sizeOf(c).width < 360 ? 16 : 20;
 
 IconData productIcon(String p) => p == 'Topi' ? Icons.sports_baseball : (p == 'Tas' ? Icons.shopping_bag : Icons.checkroom);
 Color productTint(String p) =>
@@ -57,21 +57,21 @@ class Screen extends StatelessWidget {
               Expanded(
                 child: ListView(
                   keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                  padding: EdgeInsets.fromLTRB(p, 28, p, 28),
+                  padding: EdgeInsets.fromLTRB(p, 18, p, 24),
                   children: [
                     if (back)
                       InkWell(
                         onTap: () => Navigator.maybePop(context),
                         child: Padding(
-                          padding: const EdgeInsets.only(bottom: 16, top: 2),
+                          padding: const EdgeInsets.only(bottom: 10, top: 0),
                           child: Text('‹ Kembali', style: t(13, color: C.muted)),
                         ),
                       ),
                     if (title != null)
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 22),
+                        padding: const EdgeInsets.only(bottom: 16),
                         child: Row(children: [
-                          Expanded(child: Text(title!, style: h(26))),
+                          Expanded(child: Text(title!, style: h(22))),
                           if (action != null) action!,
                         ]),
                       ),
@@ -79,7 +79,7 @@ class Screen extends StatelessWidget {
                   ],
                 ),
               ),
-              if (bottom != null) Padding(padding: EdgeInsets.fromLTRB(p, 10, p, 18), child: bottom),
+              if (bottom != null) Padding(padding: EdgeInsets.fromLTRB(p, 8, p, 14), child: bottom),
             ]),
           ),
         ),
@@ -92,11 +92,12 @@ class Btn extends StatelessWidget {
   final String label;
   final VoidCallback? onTap;
   final bool light;
-  const Btn(this.label, this.onTap, {this.light = false, super.key});
+  final double height;
+  const Btn(this.label, this.onTap, {this.light = false, this.height = 48, super.key});
   @override
   Widget build(BuildContext context) => SizedBox(
         width: double.infinity,
-        height: 54,
+        height: height,
         child: ElevatedButton(
           onPressed: onTap,
           style: ElevatedButton.styleFrom(
@@ -104,11 +105,11 @@ class Btn extends StatelessWidget {
             foregroundColor: light ? C.ink : Colors.white,
             elevation: 0,
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(27)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(height / 2)),
           ),
           child: FittedBox(
             fit: BoxFit.scaleDown,
-            child: Text(label, style: t(14, color: light ? C.ink : Colors.white, w: FontWeight.w700)),
+            child: Text(label, style: t(13, color: light ? C.ink : Colors.white, w: FontWeight.w700)),
           ),
         ),
       );
@@ -124,12 +125,12 @@ class Box extends StatelessWidget {
         onTap: onTap,
         child: Container(
           width: double.infinity,
-          margin: const EdgeInsets.only(bottom: 16),
-          padding: const EdgeInsets.all(18),
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: color,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: const [BoxShadow(color: Color(0x14000000), blurRadius: 8, offset: Offset(0, 2))],
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: const [BoxShadow(color: Color(0x0F000000), blurRadius: 10, offset: Offset(0, 2))],
           ),
           child: child,
         ),
@@ -142,8 +143,8 @@ class Tag extends StatelessWidget {
   const Tag(this.text, [this.color = C.gold]);
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-        decoration: BoxDecoration(color: color.withOpacity(.25), borderRadius: BorderRadius.circular(12)),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(color: color.withOpacity(.25), borderRadius: BorderRadius.circular(10)),
         child: Text(text, style: t(10, color: C.ink, w: FontWeight.w700), maxLines: 1),
       );
 }
@@ -157,9 +158,9 @@ class Choice extends StatelessWidget {
   Widget build(BuildContext context) => GestureDetector(
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
-          decoration: BoxDecoration(color: on ? C.brown : C.sand, borderRadius: BorderRadius.circular(20)),
-          child: Text(text, style: t(13, color: on ? Colors.white : C.ink, w: FontWeight.w600)),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+          decoration: BoxDecoration(color: on ? C.brown : C.sand, borderRadius: BorderRadius.circular(18)),
+          child: Text(text, style: t(12, color: on ? Colors.white : C.ink, w: FontWeight.w600)),
         ),
       );
 }
@@ -175,24 +176,24 @@ class Fld extends StatelessWidget {
       {this.obscure = false, this.ctrl, this.lines = 1, this.keyboard, this.onChanged, super.key});
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 18),
+        padding: const EdgeInsets.only(bottom: 14),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(label, style: t(11, color: C.muted)),
-          const SizedBox(height: 7),
+          const SizedBox(height: 6),
           TextField(
             controller: ctrl,
             obscureText: obscure,
             maxLines: lines,
             keyboardType: keyboard,
             onChanged: onChanged,
-            style: t(14),
+            style: t(13),
             decoration: InputDecoration(
               hintText: hint,
               filled: true,
               fillColor: C.sand,
               isDense: true,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
             ),
           ),
         ]),
@@ -204,8 +205,8 @@ class Label extends StatelessWidget {
   const Label(this.text, {super.key});
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(top: 18, bottom: 10),
-        child: Text(text.toUpperCase(), style: t(11, color: C.brown, w: FontWeight.w800)),
+        padding: const EdgeInsets.only(top: 14, bottom: 8),
+        child: Text(text.toUpperCase(), style: t(10, color: C.brown, w: FontWeight.w700)),
       );
 }
 
@@ -215,9 +216,9 @@ class Counter extends StatelessWidget {
   const Counter(this.value, this.onChanged, {super.key});
   @override
   Widget build(BuildContext context) => Row(mainAxisSize: MainAxisSize.min, children: [
-        IconButton(onPressed: () => onChanged(value > 1 ? value - 1 : 1), icon: const Icon(Icons.remove_circle_outline)),
-        Text('$value', style: h(20)),
-        IconButton(onPressed: () => onChanged(value + 1), icon: const Icon(Icons.add_circle_outline)),
+        IconButton(onPressed: () => onChanged(value > 1 ? value - 1 : 1), visualDensity: VisualDensity.compact, icon: const Icon(Icons.remove_circle_outline)),
+        Text('$value', style: h(18)),
+        IconButton(onPressed: () => onChanged(value + 1), visualDensity: VisualDensity.compact, icon: const Icon(Icons.add_circle_outline)),
       ]);
 }
 
@@ -230,7 +231,7 @@ class Timeline extends StatelessWidget {
         child: Column(children: [
           for (var i = 0; i < steps.length; i++)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 9),
+              padding: const EdgeInsets.symmetric(vertical: 7),
               child: Row(children: [
                 Icon(Icons.circle, size: 10, color: i < current ? C.green : (i == current ? C.brown : C.sand)),
                 const SizedBox(width: 10),
@@ -259,15 +260,15 @@ class OrderTile extends StatelessWidget {
       onTap: onTap,
       child: Row(children: [
         Container(
-          width: 50,
-          height: 50,
+          width: 46,
+          height: 46,
           decoration: BoxDecoration(color: tint.withOpacity(.2), borderRadius: BorderRadius.circular(12)),
           child: Icon(productIcon(o.product), color: tint),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(o.title, style: t(14, w: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
+            Text(o.title, style: t(13, w: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis),
             Text(admin ? '#${o.id} · ${o.customer} · ${o.qty} pcs' : '#${o.id} · ${o.qty} pcs',
                 style: t(10, color: C.muted), maxLines: 1, overflow: TextOverflow.ellipsis),
           ]),

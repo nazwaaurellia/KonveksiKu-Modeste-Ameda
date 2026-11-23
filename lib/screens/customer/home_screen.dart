@@ -22,11 +22,11 @@ class HomeScreen extends StatelessWidget {
             CircleAvatar(
               radius: 16,
               backgroundColor: C.gold,
-              child: Text(s.userName.isEmpty ? '?' : s.userName[0].toUpperCase(), style: t(12, w: FontWeight.w800)),
+              child: Text(s.userName.isEmpty ? '?' : s.userName[0].toUpperCase(), style: t(12, w: FontWeight.w700)),
             ),
           ]),
           const SizedBox(height: 4),
-          Text('Mau pesan apa hari ini?', style: h(26)),
+          Text('Mau pesan apa hari ini?', style: h(22)),
           const SizedBox(height: 14),
           if (o != null)
             Box(
@@ -40,7 +40,7 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(o.title, style: t(15, w: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
+                      Text(o.title, style: t(14, w: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis),
                       Text('#${o.id} · ${o.label}', style: t(10, color: C.muted)),
                     ]),
                   ),
@@ -48,7 +48,7 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 10),
                 Text('${o.step} dari 6 tahap selesai', style: t(10, color: C.muted)),
                 const SizedBox(height: 8),
-                SizedBox(width: 170, child: Btn('Lacak pesanan ›', () => go(context, TrackScreen(order: o)))),
+                SizedBox(width: 150, child: Btn('Lacak pesanan ›', () => go(context, TrackScreen(order: o)), height: 38)),
               ]),
             )
           else
@@ -73,16 +73,16 @@ class _ServiceCard extends StatelessWidget {
   Widget build(BuildContext context) => Box(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Container(
-            height: 80,
+            height: 64,
             width: double.infinity,
-            decoration: BoxDecoration(color: tint.withOpacity(.15), borderRadius: BorderRadius.circular(14)),
-            child: Icon(icon, size: 40, color: tint),
+            decoration: BoxDecoration(color: tint.withOpacity(.15), borderRadius: BorderRadius.circular(12)),
+            child: Icon(icon, size: 30, color: tint),
           ),
           const SizedBox(height: 8),
-          Text(title, style: t(14, w: FontWeight.w800)),
+          Text(title, style: t(13, w: FontWeight.w700)),
           Text(sub, style: t(10, color: C.muted)),
-          const SizedBox(height: 8),
-          Btn('Pesan', onTap),
+          const SizedBox(height: 10),
+          Btn('Pesan', onTap, height: 38),
         ]),
       );
 }

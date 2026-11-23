@@ -9,3 +9,6 @@ build/
 .idea/
 .DS_Store
 pubspec.lock
+
+flutter_*.log
+flutter_*.png

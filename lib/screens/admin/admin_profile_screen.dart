@@ -14,7 +14,7 @@ class AdminProfileScreen extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('Admin', style: t(14, w: FontWeight.w800)),
+                Text('Admin', style: t(14, w: FontWeight.w700)),
                 Text(s.userEmail, style: t(11, color: C.muted), overflow: TextOverflow.ellipsis),
               ]),
             ),

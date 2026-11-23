@@ -23,19 +23,19 @@ class _StockScreenState extends State<StockScreen> {
             Box(
               child: Row(children: [
                 Container(
-                  width: 44,
-                  height: 44,
+                  width: 38,
+                  height: 38,
                   decoration: BoxDecoration(color: i.color, borderRadius: BorderRadius.circular(12), border: Border.all(color: C.sand)),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     Row(children: [
-                      Expanded(child: Text(i.name, style: t(14, w: FontWeight.w800), overflow: TextOverflow.ellipsis)),
+                      Expanded(child: Text(i.name, style: t(13, w: FontWeight.w700), overflow: TextOverflow.ellipsis)),
                       if (i.low) const Tag('Hampir habis', C.red),
                     ]),
                     const SizedBox(height: 6),
-                    LinearProgressIndicator(value: i.qty / i.max, color: i.low ? C.red : C.green, backgroundColor: C.sand, minHeight: 5),
+                    LinearProgressIndicator(value: i.qty / i.max, color: i.low ? C.red : C.green, backgroundColor: C.sand, minHeight: 4),
                     const SizedBox(height: 4),
                     Text('Sisa ${i.qty} ${i.unit}', style: t(10, color: C.muted)),
                   ]),
