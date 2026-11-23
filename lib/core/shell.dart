@@ -16,16 +16,29 @@ class _ShellState extends State<Shell> {
   @override
   Widget build(BuildContext context) => Scaffold(
         body: IndexedStack(index: i, children: widget.pages),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: i,
-          onTap: (v) => setState(() => i = v),
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: C.cream,
-          selectedItemColor: C.brown,
-          unselectedItemColor: C.muted,
-          selectedFontSize: 11,
-          unselectedFontSize: 11,
-          items: [for (final it in widget.items) BottomNavigationBarItem(icon: Icon(it.$1), label: it.$2)],
+        bottomNavigationBar: NavigationBarTheme(
+          data: NavigationBarThemeData(
+            height: 72,
+            backgroundColor: C.cream,
+            surfaceTintColor: Colors.transparent,
+            indicatorColor: C.gold.withOpacity(.35),
+            labelTextStyle: WidgetStateProperty.resolveWith((s) => TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: s.contains(WidgetState.selected) ? FontWeight.w800 : FontWeight.w500,
+                  color: s.contains(WidgetState.selected) ? C.brown : C.muted,
+                )),
+            iconTheme: WidgetStateProperty.resolveWith((s) => IconThemeData(
+                  size: 26,
+                  color: s.contains(WidgetState.selected) ? C.brown : C.muted,
+                )),
+          ),
+          child: NavigationBar(
+            selectedIndex: i,
+            onDestinationSelected: (v) => setState(() => i = v),
+            destinations: [
+              for (final it in widget.items) NavigationDestination(icon: Icon(it.$1), label: it.$2),
+            ],
+          ),
         ),
       );
 }

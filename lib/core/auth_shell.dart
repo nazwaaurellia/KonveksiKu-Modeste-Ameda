@@ -1,44 +1,66 @@
+import 'dart:convert';
+import 'dart:math' as math;
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'floral_bg.dart';
 import 'theme.dart';
+import 'welcome_assets.dart';
 import 'widgets.dart';
 
-/// Kerangka layar Masuk / Daftar / Lupa kata sandi (header coklat + logo).
+final Uint8List _logoBytes = base64Decode(kLogoBase64);
+
+/// Kerangka layar Masuk / Daftar / Lupa kata sandi: logo di tengah,
+/// tanpa header coklat, di atas latar bunga samar.
 class AuthShell extends StatelessWidget {
-  final String sub;
+  final String sub; // dipertahankan agar pemanggilan lama tetap jalan
   final List<Widget> body;
   const AuthShell(this.sub, this.body, {super.key});
+
   @override
   Widget build(BuildContext context) {
     final p = pad(context);
+    final logoW = math.min(MediaQuery.sizeOf(context).width * 0.5, 220.0);
     return Scaffold(
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 520),
-          child: SingleChildScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            child: Column(children: [
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.fromLTRB(p, MediaQuery.paddingOf(context).top + 24, p, 24),
-                decoration: const BoxDecoration(
-                  color: C.brown,
-                  borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
-                ),
-                child: Column(children: [
-                  CircleAvatar(radius: 28, backgroundColor: C.cream, child: Text('MA', style: h(18, C.brown))),
-                  const SizedBox(height: 10),
-                  Text('MODESTE AMEDA', style: t(15, color: Colors.white, w: FontWeight.w800)),
-                  Text(sub, style: t(11, color: Colors.white70)),
-                ]),
-              ),
-              Padding(
-                padding: EdgeInsets.all(p),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: body),
-              ),
-            ]),
+      body: FloralBg(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 520),
+            child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              padding: EdgeInsets.fromLTRB(p, MediaQuery.paddingOf(context).top + 32, p, 32),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Center(child: Image.memory(_logoBytes, width: logoW, fit: BoxFit.contain)),
+                const SizedBox(height: 16),
+                ...body,
+              ]),
+            ),
           ),
         ),
       ),
     );
   }
+}
+
+/// Judul layar auth yang rata tengah (judul besar + keterangan kecil).
+class AuthTitle extends StatelessWidget {
+  final String title;
+  final String? subtitle;
+  const AuthTitle(this.title, {this.subtitle, super.key});
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(bottom: 26),
+        child: SizedBox(
+          width: double.infinity,
+          child: Column(children: [
+            Text(title, textAlign: TextAlign.center, style: h(26)),
+            if (subtitle != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(subtitle!, textAlign: TextAlign.center, style: t(12, color: C.muted)),
+              ),
+          ]),
+        ),
+      );
 }

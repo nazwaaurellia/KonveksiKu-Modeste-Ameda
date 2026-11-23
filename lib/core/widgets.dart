@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'floral_bg.dart';
 import 'store.dart';
 import 'theme.dart';
 
@@ -21,7 +22,7 @@ void toast(BuildContext c, String m) =>
     ScaffoldMessenger.of(c).showSnackBar(SnackBar(content: Text(m), behavior: SnackBarBehavior.floating));
 
 /// Padding horizontal menyesuaikan lebar layar (HP kecil vs besar).
-double pad(BuildContext c) => MediaQuery.sizeOf(c).width < 360 ? 14 : 20;
+double pad(BuildContext c) => MediaQuery.sizeOf(c).width < 360 ? 18 : 24;
 
 IconData productIcon(String p) => p == 'Topi' ? Icons.sports_baseball : (p == 'Tas' ? Icons.shopping_bag : Icons.checkroom);
 Color productTint(String p) =>
@@ -48,7 +49,7 @@ class Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = pad(context);
     return Scaffold(
-      body: SafeArea(
+      body: FloralBg(child: SafeArea(
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 520),
@@ -56,19 +57,19 @@ class Screen extends StatelessWidget {
               Expanded(
                 child: ListView(
                   keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                  padding: EdgeInsets.fromLTRB(p, 16, p, 16),
+                  padding: EdgeInsets.fromLTRB(p, 28, p, 28),
                   children: [
                     if (back)
                       InkWell(
                         onTap: () => Navigator.maybePop(context),
                         child: Padding(
-                          padding: const EdgeInsets.only(bottom: 10, top: 2),
+                          padding: const EdgeInsets.only(bottom: 16, top: 2),
                           child: Text('‹ Kembali', style: t(13, color: C.muted)),
                         ),
                       ),
                     if (title != null)
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 14),
+                        padding: const EdgeInsets.only(bottom: 22),
                         child: Row(children: [
                           Expanded(child: Text(title!, style: h(26))),
                           if (action != null) action!,
@@ -78,11 +79,11 @@ class Screen extends StatelessWidget {
                   ],
                 ),
               ),
-              if (bottom != null) Padding(padding: EdgeInsets.fromLTRB(p, 8, p, 12), child: bottom),
+              if (bottom != null) Padding(padding: EdgeInsets.fromLTRB(p, 10, p, 18), child: bottom),
             ]),
           ),
         ),
-      ),
+      )),
     );
   }
 }
@@ -95,7 +96,7 @@ class Btn extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SizedBox(
         width: double.infinity,
-        height: 48,
+        height: 54,
         child: ElevatedButton(
           onPressed: onTap,
           style: ElevatedButton.styleFrom(
@@ -103,7 +104,7 @@ class Btn extends StatelessWidget {
             foregroundColor: light ? C.ink : Colors.white,
             elevation: 0,
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(27)),
           ),
           child: FittedBox(
             fit: BoxFit.scaleDown,
@@ -123,11 +124,11 @@ class Box extends StatelessWidget {
         onTap: onTap,
         child: Container(
           width: double.infinity,
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(14),
+          margin: const EdgeInsets.only(bottom: 16),
+          padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
             color: color,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(20),
             boxShadow: const [BoxShadow(color: Color(0x14000000), blurRadius: 8, offset: Offset(0, 2))],
           ),
           child: child,
@@ -141,7 +142,7 @@ class Tag extends StatelessWidget {
   const Tag(this.text, [this.color = C.gold]);
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         decoration: BoxDecoration(color: color.withOpacity(.25), borderRadius: BorderRadius.circular(12)),
         child: Text(text, style: t(10, color: C.ink, w: FontWeight.w700), maxLines: 1),
       );
@@ -156,7 +157,7 @@ class Choice extends StatelessWidget {
   Widget build(BuildContext context) => GestureDetector(
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
           decoration: BoxDecoration(color: on ? C.brown : C.sand, borderRadius: BorderRadius.circular(20)),
           child: Text(text, style: t(13, color: on ? Colors.white : C.ink, w: FontWeight.w600)),
         ),
@@ -174,10 +175,10 @@ class Fld extends StatelessWidget {
       {this.obscure = false, this.ctrl, this.lines = 1, this.keyboard, this.onChanged, super.key});
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.only(bottom: 18),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(label, style: t(11, color: C.muted)),
-          const SizedBox(height: 4),
+          const SizedBox(height: 7),
           TextField(
             controller: ctrl,
             obscureText: obscure,
@@ -190,7 +191,7 @@ class Fld extends StatelessWidget {
               filled: true,
               fillColor: C.sand,
               isDense: true,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
             ),
           ),
@@ -203,7 +204,7 @@ class Label extends StatelessWidget {
   const Label(this.text, {super.key});
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(top: 8, bottom: 6),
+        padding: const EdgeInsets.only(top: 18, bottom: 10),
         child: Text(text.toUpperCase(), style: t(11, color: C.brown, w: FontWeight.w800)),
       );
 }
@@ -229,7 +230,7 @@ class Timeline extends StatelessWidget {
         child: Column(children: [
           for (var i = 0; i < steps.length; i++)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6),
+              padding: const EdgeInsets.symmetric(vertical: 9),
               child: Row(children: [
                 Icon(Icons.circle, size: 10, color: i < current ? C.green : (i == current ? C.brown : C.sand)),
                 const SizedBox(width: 10),
@@ -258,8 +259,8 @@ class OrderTile extends StatelessWidget {
       onTap: onTap,
       child: Row(children: [
         Container(
-          width: 44,
-          height: 44,
+          width: 50,
+          height: 50,
           decoration: BoxDecoration(color: tint.withOpacity(.2), borderRadius: BorderRadius.circular(12)),
           child: Icon(productIcon(o.product), color: tint),
         ),

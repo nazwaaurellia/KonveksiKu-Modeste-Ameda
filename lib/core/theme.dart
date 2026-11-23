@@ -11,11 +11,17 @@ class C {
   static const red = Color(0xFFC0392B);
 }
 
+/// Pembesar font global supaya tampilan tidak terasa kecil / "bantet".
+/// Ubah angka ini untuk memperbesar / memperkecil SEMUA teks di aplikasi.
+const double kFontScale = 1.12;
+const double kMinFont = 12;
+double _fs(double s) => s * kFontScale < kMinFont ? kMinFont : s * kFontScale;
+
 TextStyle h(double size, [Color color = C.ink]) => TextStyle(
-    fontFamily: 'serif', fontWeight: FontWeight.w800, fontSize: size, color: color);
+    fontFamily: 'serif', fontWeight: FontWeight.w800, fontSize: _fs(size), color: color);
 
 TextStyle t(double size, {Color color = C.ink, FontWeight w = FontWeight.w500}) =>
-    TextStyle(fontSize: size, color: color, fontWeight: w);
+    TextStyle(fontSize: _fs(size), color: color, fontWeight: w);
 
 ThemeData buildTheme() => ThemeData(
       useMaterial3: true,

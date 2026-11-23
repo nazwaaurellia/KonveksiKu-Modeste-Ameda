@@ -32,8 +32,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) => AuthShell('Buat akun pelanggan', [
-        Text('Daftar', style: h(24)),
-        const SizedBox(height: 10),
+        const AuthTitle('Daftar', subtitle: 'Buat akun pelanggan baru'),
         Fld('Nama lengkap', 'Sari Wulandari', ctrl: name),
         Fld('Email', 'sari@email.com', ctrl: email, keyboard: TextInputType.emailAddress),
         Fld('Nomor HP / WhatsApp', '0812 3456 7890', ctrl: phone, keyboard: TextInputType.phone),

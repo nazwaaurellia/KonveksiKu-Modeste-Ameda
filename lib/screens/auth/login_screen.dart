@@ -7,6 +7,7 @@ import '../admin/admin_shell.dart';
 import '../customer/customer_shell.dart';
 import 'forgot_screen.dart';
 import 'register_screen.dart';
+import 'welcome_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -28,14 +29,16 @@ class _LoginScreenState extends State<LoginScreen> {
     final s = AppStore.I;
     s.login(forced ?? (email.text.trim().isEmpty ? 'sari@email.com' : email.text));
     // Demo: email berisi "admin" -> masuk sebagai admin, selain itu pelanggan.
-    goReplaceAll(context, s.isAdmin ? const AdminShell() : const CustomerShell());
+    // Tampilkan layar sambutan dulu, lalu otomatis ke halaman utama.
+    goReplaceAll(
+      context,
+      WelcomeScreen(next: s.isAdmin ? const AdminShell() : const CustomerShell()),
+    );
   }
 
   @override
   Widget build(BuildContext context) => AuthShell('Konveksi & Bordir', [
-        Text('Masuk', style: h(24)),
-        Text('Selamat datang kembali', style: t(11, color: C.muted)),
-        const SizedBox(height: 14),
+        const AuthTitle('Masuk', subtitle: 'Selamat datang kembali'),
         Fld('Email atau nomor HP', 'sari@email.com', ctrl: email, keyboard: TextInputType.emailAddress),
         const Fld('Kata sandi', '••••••••••', obscure: true),
         Row(children: [
@@ -62,6 +65,9 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
-        Center(child: Text('Tips demo: email berisi "admin" untuk masuk sebagai admin.', style: t(10, color: C.muted))),
+        Center(
+          child: Text('Tips demo: email berisi "admin" untuk masuk sebagai admin.',
+              textAlign: TextAlign.center, style: t(10, color: C.muted)),
+        ),
       ]);
 }

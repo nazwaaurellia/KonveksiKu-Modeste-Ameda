@@ -22,9 +22,8 @@ class _ForgotScreenState extends State<ForgotScreen> {
 
   @override
   Widget build(BuildContext context) => AuthShell('Pemulihan akun', [
-        Text('Lupa kata sandi', style: h(24)),
-        Text('Masukkan email atau nomor HP. Kami kirim kode verifikasi 6 digit.', style: t(11, color: C.muted)),
-        const SizedBox(height: 14),
+        const AuthTitle('Lupa kata sandi',
+            subtitle: 'Masukkan email atau nomor HP. Kami kirim kode verifikasi 6 digit.'),
         Fld('Email atau nomor HP', 'sari@email.com', ctrl: email),
         Btn(sent ? 'Kirim ulang kode' : 'Kirim kode', () {
           if (email.text.trim().isEmpty) return toast(context, 'Isi email atau nomor HP dulu');
