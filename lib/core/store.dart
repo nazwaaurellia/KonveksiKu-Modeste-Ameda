@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 enum St { menungguDp, menungguVerifikasi, menungguDesain, dibordir, selesai, diambil }
 
 // Harga (bisa diubah sesuai kebutuhan)
-const kBase = {'Kemeja': 85000, 'Kaos': 55000, 'Seragam': 90000, 'Jaket': 150000, 'Topi': 35000, 'Tas': 60000};
+const kBase = {'Kemeja': 85000, 'Kaos': 55000, 'Seragam': 90000, 'Jaket': 150000, 'Topi': 35000, 'Dasi': 30000, 'Tas': 60000};
 const kBordir = {'5 cm': 5000, '8 cm': 8000, '10 cm': 12000};
 const kSteps = ['Pesanan diterima', 'DP terverifikasi', 'Desain disetujui', 'Dibordir', 'Selesai', 'Siap diambil'];
 const kMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];

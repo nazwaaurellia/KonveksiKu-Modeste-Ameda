@@ -25,7 +25,7 @@ class _ForgotScreenState extends State<ForgotScreen> {
         const AuthTitle('Lupa kata sandi',
             subtitle: 'Masukkan email atau nomor HP. Kami kirim kode verifikasi 6 digit.'),
         Fld('Email atau nomor HP', 'sari@email.com', ctrl: email),
-        Btn(sent ? 'Kirim ulang kode' : 'Kirim kode', () {
+        Btn(sent ? 'Kirim ulang kode' : 'Kirim kode', large: true, () {
           if (email.text.trim().isEmpty) return toast(context, 'Isi email atau nomor HP dulu');
           setState(() => sent = true);
           toast(context, 'Kode verifikasi dikirim (demo)');

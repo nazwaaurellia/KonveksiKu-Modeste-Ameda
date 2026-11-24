@@ -33,22 +33,16 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
         title: 'Desain & detail',
         action: Text('Langkah 2 dari 2', style: t(10, color: C.muted)),
         back: true,
-        bottom: Row(children: [
-          Expanded(
-            flex: 4,
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-              Text('Estimasi total', style: t(10, color: C.muted)),
-              FittedBox(fit: BoxFit.scaleDown, child: Text(rp(d.total), style: t(15, w: FontWeight.w700))),
-            ]),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            flex: 6,
-            child: Btn('Lanjut ke pembayaran', () {
-              d.note = note.text;
-              go(context, const PaymentScreen());
-            }),
-          ),
+        bottom: Column(mainAxisSize: MainAxisSize.min, children: [
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Text('Estimasi total', style: t(12, color: C.muted)),
+            Text(rp(d.total), style: t(16, w: FontWeight.w800)),
+          ]),
+          const SizedBox(height: 10),
+          Btn('Lanjut ke pembayaran', () {
+            d.note = note.text;
+            go(context, const PaymentScreen());
+          }),
         ]),
         children: [
           const Label('Desain'),

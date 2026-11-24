@@ -14,22 +14,18 @@ class DesignReviewScreen extends StatelessWidget {
           title: o.title,
           back: true,
           action: Tag(o.revisi ? 'Perlu revisi' : 'Menunggu desain', C.red),
-          bottom: Row(children: [
-            Expanded(
-              child: Btn('Minta revisi', () {
-                s.requestRevision(o);
-                toast(context, 'Permintaan revisi dikirim ke pelanggan');
-                Navigator.pop(context);
-              }, light: true),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Btn('Setujui desain', () {
-                s.approveDesign(o);
-                toast(context, 'Desain disetujui. Pesanan masuk tahap bordir.');
-                Navigator.pop(context);
-              }),
-            ),
+          bottom: Column(mainAxisSize: MainAxisSize.min, children: [
+            Btn('Setujui desain', () {
+              s.approveDesign(o);
+              toast(context, 'Desain disetujui. Pesanan masuk tahap bordir.');
+              Navigator.pop(context);
+            }),
+            const SizedBox(height: 8),
+            Btn('Minta revisi', () {
+              s.requestRevision(o);
+              toast(context, 'Permintaan revisi dikirim ke pelanggan');
+              Navigator.pop(context);
+            }, light: true),
           ]),
           children: [
             Text('#${o.id} · ${o.customer} · ${o.qty} pcs', style: t(10, color: C.muted)),

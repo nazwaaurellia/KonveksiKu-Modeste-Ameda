@@ -18,7 +18,7 @@ const double kMinFont = 11;
 double _fs(double s) => s * kFontScale < kMinFont ? kMinFont : s * kFontScale;
 
 TextStyle h(double size, [Color color = C.ink]) => TextStyle(
-    fontFamily: 'serif', fontWeight: FontWeight.w700, height: 1.2, fontSize: _fs(size), color: color);
+    fontWeight: FontWeight.w800, height: 1.2, fontSize: _fs(size), color: color);
 
 TextStyle t(double size, {Color color = C.ink, FontWeight w = FontWeight.w500}) =>
     TextStyle(fontSize: _fs(size), color: color, fontWeight: w, height: 1.3);

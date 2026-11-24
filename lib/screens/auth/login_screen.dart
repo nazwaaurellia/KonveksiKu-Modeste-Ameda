@@ -37,32 +37,49 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => AuthShell('Konveksi & Bordir', [
-        const AuthTitle('Masuk', subtitle: 'Selamat datang kembali'),
-        Fld('Email atau nomor HP', 'sari@email.com', ctrl: email, keyboard: TextInputType.emailAddress),
-        const Fld('Kata sandi', '••••••••••', obscure: true),
-        Row(children: [
-          Checkbox(value: remember, activeColor: C.brown, onChanged: (v) => setState(() => remember = v ?? false)),
-          Expanded(child: Text('Ingat saya', style: t(12))),
-          InkWell(
-            onTap: () => go(context, const ForgotScreen()),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text('Lupa kata sandi?', style: t(12, color: C.brown, w: FontWeight.w700)),
+  Widget build(BuildContext context) => AuthShell(
+        'Konveksi & Bordir',
+        [
+          const AuthTitle('Masuk', subtitle: 'Selamat datang kembali'),
+          Fld('Email atau nomor HP', 'sari@email.com', ctrl: email, keyboard: TextInputType.emailAddress),
+          const Fld('Kata sandi', '••••••••••', obscure: true),
+          Row(children: [
+            SizedBox(
+              width: 24,
+              height: 24,
+              child: Checkbox(
+                value: remember,
+                activeColor: C.brown,
+                side: const BorderSide(color: C.brown, width: 1.5),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                onChanged: (v) => setState(() => remember = v ?? false),
+              ),
             ),
-          ),
-        ]),
-        const SizedBox(height: 8),
-        Btn('Masuk', _login),
-        const SizedBox(height: 14),
-        Center(
+            const SizedBox(width: 10),
+            Expanded(child: Text('Ingat saya', style: t(13))),
+            InkWell(
+              onTap: () => go(context, const ForgotScreen()),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Text('Lupa kata sandi?', style: t(13, color: C.brown, w: FontWeight.w600)),
+              ),
+            ),
+          ]),
+          const SizedBox(height: 20),
+          Btn('Masuk', _login, large: true),
+        ],
+        footer: Center(
           child: InkWell(
             onTap: () => go(context, const RegisterScreen()),
             child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Text('Belum punya akun? Daftar', style: t(12, color: C.brown, w: FontWeight.w700)),
+              padding: const EdgeInsets.all(10),
+              child: Text.rich(TextSpan(style: t(13, color: C.brown), children: [
+                const TextSpan(text: 'Belum punya akun? '),
+                TextSpan(text: 'Daftar', style: t(13, color: C.brown, w: FontWeight.w800)),
+              ])),
             ),
           ),
         ),
-      ]);
+      );
 }

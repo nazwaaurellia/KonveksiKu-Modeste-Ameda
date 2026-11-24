@@ -37,7 +37,7 @@ class _AdminNewOrderScreenState extends State<AdminNewOrderScreen> {
         Fld('Nama pelanggan', 'Ibu Sari', ctrl: name),
         const Label('Jenis produk'),
         Wrap(spacing: 8, runSpacing: 8, children: [
-          for (final p in ['Seragam', 'Topi', 'Jaket', 'Tas']) Choice(p, product == p, () => setState(() => product = p)),
+          for (final p in ['Seragam', 'Topi', 'Dasi', 'Jaket', 'Tas']) Choice(p, product == p, () => setState(() => product = p)),
         ]),
         const Label('Ukuran bordir'),
         Wrap(spacing: 8, runSpacing: 8, children: [

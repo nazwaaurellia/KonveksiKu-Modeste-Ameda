@@ -53,20 +53,14 @@ class ReportScreen extends StatelessWidget {
           if (pending.isEmpty) Text('Tidak ada DP yang menunggu verifikasi.', style: t(12, color: C.muted)),
           for (final o in pending)
             Box(
-              child: Row(children: [
-                Expanded(
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(o.customer, style: t(13, w: FontWeight.w700)),
-                    Text('DP #${o.id} · ${rp(o.dp)}', style: t(10, color: C.muted)),
-                  ]),
-                ),
-                SizedBox(
-                  width: 100,
-                  child: Btn('Verifikasi', () {
-                    s.verifyDp(o);
-                    toast(context, 'DP ${o.id} terverifikasi');
-                  }, height: 38),
-                ),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(o.customer, style: t(13, w: FontWeight.w700)),
+                Text('DP #${o.id} · ${rp(o.dp)}', style: t(10, color: C.muted)),
+                const SizedBox(height: 10),
+                Btn('Verifikasi', () {
+                  s.verifyDp(o);
+                  toast(context, 'DP ${o.id} terverifikasi');
+                }, compact: true),
               ]),
             ),
         ]);

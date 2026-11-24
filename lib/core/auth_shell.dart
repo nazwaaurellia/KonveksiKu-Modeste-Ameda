@@ -15,25 +15,43 @@ final Uint8List _logoBytes = base64Decode(kLogoBase64);
 class AuthShell extends StatelessWidget {
   final String sub; // dipertahankan agar pemanggilan lama tetap jalan
   final List<Widget> body;
-  const AuthShell(this.sub, this.body, {super.key});
+  final Widget? footer; // ditempel di dasar layar (mis. "Belum punya akun? Daftar")
+  const AuthShell(this.sub, this.body, {this.footer, super.key});
 
   @override
   Widget build(BuildContext context) {
     final p = pad(context);
-    final logoW = math.min(MediaQuery.sizeOf(context).width * 0.42, 170.0);
+    final logoW = math.min(MediaQuery.sizeOf(context).width * 0.40, 160.0);
     return Scaffold(
       body: FloralBg(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 520),
-            child: SingleChildScrollView(
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              padding: EdgeInsets.fromLTRB(p, MediaQuery.paddingOf(context).top + 36, p, 28),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Center(child: Image.memory(_logoBytes, width: logoW, fit: BoxFit.contain)),
-                const SizedBox(height: 18),
-                ...body,
-              ]),
+        opacity: 2.4,
+        scale: 1.6,
+        outline: false,
+        child: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, box) => Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 520),
+                child: SingleChildScrollView(
+                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                  padding: EdgeInsets.fromLTRB(p + 4, 24, p + 4, 16),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: box.maxHeight - 40),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                          Center(child: Image.memory(_logoBytes, width: logoW, fit: BoxFit.contain)),
+                          const SizedBox(height: 22),
+                          ...body,
+                        ]),
+                        if (footer != null) Padding(padding: const EdgeInsets.only(top: 24), child: footer!),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
         ),
@@ -54,11 +72,11 @@ class AuthTitle extends StatelessWidget {
         child: SizedBox(
           width: double.infinity,
           child: Column(children: [
-            Text(title, textAlign: TextAlign.center, style: h(24)),
+            Text(title, textAlign: TextAlign.center, style: h(25)),
             if (subtitle != null)
               Padding(
                 padding: const EdgeInsets.only(top: 6),
-                child: Text(subtitle!, textAlign: TextAlign.center, style: t(12, color: C.muted)),
+                child: Text(subtitle!, textAlign: TextAlign.center, style: t(13, color: C.muted)),
               ),
           ]),
         ),

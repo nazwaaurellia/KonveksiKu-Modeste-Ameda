@@ -39,7 +39,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         Fld('Kata sandi', '••••••••••', ctrl: pass, obscure: true),
         Text('Minimal 8 karakter, kombinasi huruf dan angka', style: t(10, color: C.muted)),
         const SizedBox(height: 14),
-        Btn('Daftar', _submit),
+        Btn('Daftar', _submit, large: true),
         const SizedBox(height: 12),
         Center(
           child: InkWell(
