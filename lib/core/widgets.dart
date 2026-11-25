@@ -59,7 +59,7 @@ class Screen extends StatelessWidget {
               Expanded(
                 child: ListView(
                   keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                  padding: EdgeInsets.fromLTRB(p, 16, p, 24),
+                  padding: EdgeInsets.fromLTRB(p, 18, p, 28),
                   children: [
                     ...children,
                   ],
@@ -130,7 +130,7 @@ class Btn extends StatelessWidget {
       {this.light = false, this.compact = false, this.large = false, this.wide = false, this.icon, this.height, super.key});
   @override
   Widget build(BuildContext context) {
-    final h = height ?? (compact ? 34 : (large ? 46 : 42));
+    final h = height ?? (compact ? 38 : (large ? 50 : 46));
     final fg = light ? C.ink : Colors.white;
     final button = ElevatedButton(
       onPressed: onTap,
@@ -172,8 +172,8 @@ class Box extends StatelessWidget {
         onTap: onTap,
         child: Container(
           width: double.infinity,
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(14),
+          margin: const EdgeInsets.only(bottom: 14),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: color,
             borderRadius: BorderRadius.circular(20),
@@ -206,9 +206,9 @@ class Choice extends StatelessWidget {
   Widget build(BuildContext context) => GestureDetector(
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-          decoration: BoxDecoration(color: on ? C.brown : C.sand, borderRadius: BorderRadius.circular(18)),
-          child: Text(text, style: t(12, color: on ? Colors.white : C.ink, w: FontWeight.w600)),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+          decoration: BoxDecoration(color: on ? C.brown : C.sand, borderRadius: BorderRadius.circular(20)),
+          child: Text(text, style: t(13, color: on ? Colors.white : C.ink, w: FontWeight.w600)),
         ),
       );
 }
@@ -256,7 +256,7 @@ class Label extends StatelessWidget {
   const Label(this.text, {super.key});
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(top: 20, bottom: 12),
+        padding: const EdgeInsets.only(top: 26, bottom: 12),
         child: Text(text.toUpperCase(),
             style: t(11, color: C.brown, w: FontWeight.w800).copyWith(letterSpacing: 1.2)),
       );

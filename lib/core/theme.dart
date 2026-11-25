@@ -13,12 +13,12 @@ class C {
 
 /// Skala font global (1.0 = ukuran asli).
 /// Ubah angka ini untuk memperbesar / memperkecil SEMUA teks di aplikasi.
-const double kFontScale = 1.08;
+const double kFontScale = 1.0;
 const double kMinFont = 11;
 double _fs(double s) => s * kFontScale < kMinFont ? kMinFont : s * kFontScale;
 
 TextStyle h(double size, [Color color = C.ink]) => TextStyle(
-    fontWeight: FontWeight.w800, height: 1.2, fontSize: _fs(size), color: color);
+    fontWeight: FontWeight.w800, height: 1.2, fontSize: _fs(size) * 0.88, color: color);
 
 TextStyle t(double size, {Color color = C.ink, FontWeight w = FontWeight.w500}) =>
     TextStyle(fontSize: _fs(size), color: color, fontWeight: w, height: 1.3);

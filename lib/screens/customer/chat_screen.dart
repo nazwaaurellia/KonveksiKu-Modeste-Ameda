@@ -41,12 +41,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final input = TextEditingController();
   final scroll = ScrollController();
-  final msgs = <_Msg>[
-    _Msg('Halo, ada yang bisa kami bantu soal pesanan ini?', '09.10', false),
-    _Msg('Halo kak, bordir seragam PKK kira-kira selesai kapan ya?', '09.12', true),
-    _Msg('Halo! Bordirnya sedang berjalan, estimasi selesai 18 Nov. Foto progress terbaru sudah kami kirim di halaman Lacak.', '09.14', false),
-    _Msg('Oke, terima kasih kak', '09.15', true),
-  ];
+  final msgs = <_Msg>[];
 
   String _now() {
     final n = DateTime.now();
@@ -115,7 +110,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           const Icon(Icons.chevron_right, color: C.ink),
                         ]),
                       ),
-                    Center(
+                    if (msgs.isNotEmpty) Center(
                       child: Container(
                         margin: const EdgeInsets.symmetric(vertical: 10),
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
@@ -123,6 +118,12 @@ class _ChatScreenState extends State<ChatScreen> {
                         child: Text('Hari ini', style: t(11, w: FontWeight.w700)),
                       ),
                     ),
+                    if (msgs.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 60),
+                        child: Text('Belum ada pesan.\nTulis pesan atau pilih pertanyaan cepat di bawah.',
+                            textAlign: TextAlign.center, style: t(13, color: C.muted).copyWith(height: 1.5)),
+                      ),
                     for (final m in msgs) _Bubble(m),
                   ],
                 ),

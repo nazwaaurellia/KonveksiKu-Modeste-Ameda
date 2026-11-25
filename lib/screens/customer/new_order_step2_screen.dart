@@ -21,7 +21,10 @@ class _Cfg {
 const _cfg = <String, _Cfg>{
   'jahit': _Cfg('Warna', 'Isi jumlah tiap ukuran untuk setiap warna.',
       [('S', null), ('M', null), ('L', null), ('XL', null), ('XXL', null)], [4, 8, 8, 4, 0], '+ Ukuran lain (XS, 3XL, anak)',
-      'Mis. posisi logo, nama di dada', 'Ukuran bordir', [('Ukuran bordir', 'bsize', ['5 cm', '8 cm', '10 cm'])], boxed: false),
+      'Mis. posisi logo, nama di dada', 'Bordir', [
+        ('Posisi (bisa lebih dari satu)', 'pos', ['Dada kiri']),
+        ('Ukuran bordir', 'bsize', ['5 cm', '8 cm', '10 cm']),
+      ]),
   'hijab': _Cfg('Warna hijab', 'Isi jumlah tiap ukuran untuk setiap warna. Ukuran segi empat adalah sisi × sisi.',
       [('Anak', '90 × 90 cm'), ('Standar', '110 × 110 cm'), ('Besar', '120 × 120 cm')], [6, 20, 4], '+ Ukuran lain (sisi × sisi)',
       'Mis. logo di pojok kanan bawah, benang emas', 'Bordir hijab',
@@ -50,10 +53,17 @@ const _cfg = <String, _Cfg>{
       sizeNote: 'Dewasa: lingkar kepala sekitar 56–60 cm, bisa diatur. Anak: sekitar 52–54 cm.'),
 };
 
+/// Letak bordir per barang (mengikuti referensi "Posisi bordir per barang").
 const _positions = {
+  'Seragam': ['Dada kiri', 'Dada kanan', 'Lengan kiri', 'Lengan kanan', 'Punggung', 'Kerah', 'Saku'],
+  'Kemeja': ['Dada kiri', 'Dada kanan', 'Saku', 'Lengan kiri', 'Lengan kanan', 'Kerah', 'Manset'],
+  'Kaos': ['Dada kiri', 'Dada kanan', 'Dada tengah', 'Lengan', 'Punggung', 'Kerah belakang'],
+  'Jaket': ['Dada kiri', 'Dada kanan', 'Lengan kiri', 'Lengan kanan', 'Punggung', 'Tudung'],
+  'Rompi': ['Dada kiri', 'Dada kanan', 'Punggung', 'Saku'],
+  'Batik': ['Dada kiri', 'Dada kanan', 'Lengan kiri', 'Lengan kanan', 'Punggung', 'Kerah', 'Saku'],
   'Topi': ['Depan', 'Samping kiri', 'Samping kanan', 'Belakang'],
-  'Dasi': ['Ujung bawah', 'Bagian tengah', 'Berulang'],
-  'Kaos Kaki': ['Pergelangan', 'Sisi luar', 'Punggung kaki', 'Telapak'],
+  'Dasi': ['Ujung bawah', 'Bagian tengah'],
+  'Kaos Kaki': ['Pergelangan', 'Sisi luar'],
   'Hijab': ['Pojok depan', 'Tepi bawah', 'Tengah depan'],
 };
 const _clothesPos = ['Dada kiri', 'Dada kanan', 'Lengan kiri', 'Lengan kanan', 'Punggung', 'Kerah', 'Saku'];
@@ -67,20 +77,21 @@ class NewOrderStep2Screen extends StatefulWidget {
 class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
   final d = AppStore.I.draft;
   final q = TextEditingController();
+  final qt = TextEditingController();
   int tab = 0;
 
   @override
   void initState() {
     super.initState();
-    if (d.positions.isEmpty) {
-      final list = d.kind == 'bordir' ? (_positions[d.product] ?? _clothesPos) : (_cfg[d.kind]?.card.where((e) => e.$2 == 'pos').firstOrNull?.$3 ?? const []);
-      if (list.isNotEmpty) d.positions = {list.first};
-    }
+    final list = _positions[d.product] ?? _clothesPos;
+    d.positions.removeWhere((x) => !list.contains(x));
+    if (d.positions.isEmpty) d.positions = {list.first};
   }
 
   @override
   void dispose() {
     q.dispose();
+    qt.dispose();
     super.dispose();
   }
 
@@ -104,7 +115,8 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
   Widget _section(List<(String, String, List<String>)> list, {bool labels = true}) {
     final w = <Widget>[];
     for (var i = 0; i < list.length; i++) {
-      final (label, key, items) = list[i];
+      final (label, key, rawItems) = list[i];
+      final items = key == 'pos' ? (_positions[d.product] ?? rawItems) : rawItems;
       if (labels) {
         w.add(Padding(
           padding: EdgeInsets.only(top: i == 0 ? 0 : 16, bottom: 10),
@@ -134,6 +146,8 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
   // ---------- Bordir saja ----------
   Widget _bordir() {
     final pos = _positions[d.product] ?? _clothesPos;
+    final tp = filterColors(kThreads, qt.text);
+    final tHex = parseHex(qt.text);
     final unitTxt = '${d.bsize}, ${d.posCount} posisi';
     return stepScreen(
       2,
@@ -179,9 +193,22 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
         const Label('Ukuran bordir'),
         _bsizeChips(const ['5 cm', '8 cm', '10 cm']),
         SectionRow('Warna benang', trailing: '${d.threads.length} dipilih'),
-        ColorGrid(kThreads, d.threads, (x) => setState(() => d.threads.contains(x) ? d.threads.remove(x) : d.threads.add(x))),
+        ColorGrid(tp, d.threads, (x) => setState(() => d.threads.contains(x) ? d.threads.remove(x) : d.threads.add(x))),
         const SizedBox(height: 14),
-        const PillField('Cari nama atau kode warna benang', search: true),
+        PillField('Cari nama atau kode warna benang', ctrl: qt, search: true, onChanged: (_) => setState(() {})),
+        if (tHex != null && !tp.any((e) => hexOf(e.$2) == hexOf(tHex)))
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: OutChip('Tambah warna ${hexOf(tHex)}', () => setState(() {
+                    final n = hexOf(tHex);
+                    kCustomColors[n] = tHex;
+                    d.threads.add(n);
+                    qt.clear();
+                  })),
+            ),
+          ),
         const Label('Jumlah barang'),
         Box(
           child: Row(children: [
@@ -200,7 +227,9 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
     if (d.kind == 'bordir') return _bordir();
     final c = _cfg[d.kind]!;
     final query = q.text.trim().toLowerCase();
-    final palette = query.isEmpty ? kPalette : kPalette.where((e) => e.$1.toLowerCase().contains(query)).toList();
+    final palette = filterColors(kPalette, query);
+    final hex = parseHex(query);
+    final canAdd = hex != null && !palette.any((e) => hexOf(e.$2) == hexOf(hex));
     final chosen = d.colors.toList();
     if (tab >= chosen.length) tab = 0;
     final List<(String, String?)> rows = [...c.rows, for (final e in d.extraSizes) (e, null)];
@@ -216,9 +245,23 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
         const SectionRow('Desain'),
         UploadBox(d.hasDesign, () => setState(() => d.hasDesign = !d.hasDesign)),
         SectionRow(c.colorLabel, trailing: '${d.colors.length} dipilih'),
+        if (palette.isEmpty && !canAdd) const Sub('Warna tidak ditemukan. Coba kode hex, mis. #7B1E2B.'),
         ColorGrid(palette, d.colors, (x) => setState(() => d.colors.contains(x) ? d.colors.remove(x) : d.colors.add(x))),
         const SizedBox(height: 14),
         PillField('Cari nama atau kode warna, mis. #1F2A5C', ctrl: q, search: true, onChanged: (_) => setState(() {})),
+        if (canAdd)
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: OutChip('Tambah warna ${hexOf(hex)}', () => setState(() {
+                    final n = hexOf(hex);
+                    kCustomColors[n] = hex;
+                    d.colors.add(n);
+                    q.clear();
+                  })),
+            ),
+          ),
         if (c.sizeNote != null) ...[const Label('Ukuran topi'), Sub(c.sizeNote!)],
         for (final (label, key, items) in c.pre) ...[
           Label(label),
@@ -245,7 +288,7 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
           ),
         if (d.bordir) ...[
           Label(c.cardTitle),
-          c.boxed ? Box(child: _section(c.card)) : _section(c.card, labels: false),
+          Box(child: _section(c.card)),
         ],
         const Label('Catatan'),
         NoteField(c.noteHint, d.note, (v) => d.note = v),

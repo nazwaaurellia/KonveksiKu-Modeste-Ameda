@@ -42,6 +42,16 @@ const _cfg = <String, _Cfg>{
       'Tambah bordir pada topi', 'Logo atau nama. Posisi dan ukuran diatur di langkah berikutnya.'),
 };
 
+/// Semua bahan kain yang bisa dicari, apa pun jenis pesanannya.
+const _allFabrics = [
+  'Polyester', 'Katun', 'Drill', 'CVC', 'Toyobo', 'Fleece', 'Denim', 'Baby terry', 'Lacoste', 'Rayon', 'Satin',
+  'Cotton combed', 'Linen', 'Flanel', 'Kanvas', 'Canvas', 'Beludru', 'Oxford', 'Twill', 'Spandek', 'Voal', 'Paris',
+  'Sifon', 'Jersey', 'Wolfis', 'Ceruty', 'Crinkle', 'Premium silk', 'Bubble pop', 'Rafael', 'Taslan', 'Jaring',
+  'Corduroy', 'Nilon', 'Wol', 'Bambu', 'Terry (handuk)', 'Akrilik', 'Katun + spandex', 'Microfiber', 'Rajut',
+  'Jacquard', 'Sutra imitasi', 'Tetoron', 'Marcopolo', 'Dobby', 'Hyget', 'Scuba', 'Katun poplin', 'Katun jepang',
+  'Batik cap', 'Batik printing', 'Cotton carded', 'Bahan kaos 30s', 'Poplin', 'Kain tenun', 'Jeans', 'Kain parasut',
+];
+
 class NewOrderStep1Screen extends StatefulWidget {
   const NewOrderStep1Screen({super.key});
   @override
@@ -87,14 +97,6 @@ class _NewOrderStep1ScreenState extends State<NewOrderStep1Screen> {
               ),
             ]),
           ),
-          Box(
-            color: const Color(0xFFFBEFD5),
-            child: Row(children: [
-              _round(Icons.view_in_ar_outlined),
-              const SizedBox(width: 12),
-              Expanded(child: Text('Kami cek dulu kondisi barangnya sebelum dibordir.', style: t(13))),
-            ]),
-          ),
         ],
       );
 
@@ -111,7 +113,7 @@ class _NewOrderStep1ScreenState extends State<NewOrderStep1Screen> {
   Widget build(BuildContext context) {
     if (d.kind == 'bordir') return _bordir();
     final c = _cfg[d.kind]!;
-    final pool = [...c.fabrics, ...c.moreFabrics];
+    final pool = {...c.fabrics, ...c.moreFabrics, ..._allFabrics}.toList();
     final query = q.text.trim().toLowerCase();
     final shown = query.isNotEmpty ? pool.where((f) => f.toLowerCase().contains(query)).toList() : (all ? pool : c.fabrics);
     final jahit = d.kind == 'jahit';
@@ -138,8 +140,21 @@ class _NewOrderStep1ScreenState extends State<NewOrderStep1Screen> {
         const Label('Bahan'),
         PillField(c.searchHint, ctrl: q, search: true, onChanged: (_) => setState(() {})),
         const SizedBox(height: 14),
+        if (d.fabric.isNotEmpty) Padding(padding: const EdgeInsets.only(bottom: 4), child: Text('Dipilih: ${d.fabric}', style: t(12.5, color: C.brown, w: FontWeight.w800))),
         Sub(pop),
-        if (shown.isEmpty) Sub('Bahan tidak ditemukan. Ketik nama lain atau tulis di catatan.'),
+        if (query.isNotEmpty && !pool.any((f) => f.toLowerCase() == query)) ...[
+          if (shown.isEmpty) const Sub('Bahan tidak ada di daftar. Kamu bisa memakai nama bahan sendiri:'),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: OutChip('Pakai "${q.text.trim()}"', () => setState(() {
+                    d.fabric = q.text.trim();
+                    q.clear();
+                  })),
+            ),
+          ),
+        ],
         Chips(
           shown,
           (x) => d.fabric == x,

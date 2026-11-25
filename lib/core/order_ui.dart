@@ -11,13 +11,36 @@ const kPalette = <(String, Color)>[
   ('Cokelat', Color(0xFF6D4C41)), ('Krem', Color(0xFFE8D9B5)), ('Pink', Color(0xFFF48FB1)),
   ('Ungu', Color(0xFF7E57C2)), ('Tosca', Color(0xFF26A69A)), ('Maroon', Color(0xFF7B1E2B)),
   ('Khaki', Color(0xFFC2A878)), ('Hijau', Color(0xFF4CAF50)), ('Cyan', Color(0xFF00ACC1)),
+  ('Navy', Color(0xFF0D1B4C)), ('Biru muda', Color(0xFF64B5F6)), ('Biru langit', Color(0xFF90CAF9)),
+  ('Hijau army', Color(0xFF4B5320)), ('Hijau botol', Color(0xFF1B5E20)), ('Hijau mint', Color(0xFFA5D6A7)),
+  ('Lime', Color(0xFFCDDC39)), ('Peach', Color(0xFFFFCCBC)), ('Salem', Color(0xFFFFAB91)),
+  ('Coral', Color(0xFFFF7043)), ('Bata', Color(0xFFA1442B)), ('Burgundy', Color(0xFF5C1A2B)),
+  ('Mocca', Color(0xFF8D6E63)), ('Cokelat tua', Color(0xFF3E2723)), ('Abu tua', Color(0xFF424242)),
+  ('Abu muda', Color(0xFFE0E0E0)), ('Lavender', Color(0xFFB39DDB)), ('Magenta', Color(0xFFC2185B)),
+  ('Mustard', Color(0xFFD4A82A)), ('Emas', Color(0xFFC9A227)), ('Perak', Color(0xFFBDBDBD)),
 ];
-const kThreads = <(String, Color)>[
-  ('Hitam', Color(0xFF111111)), ('Putih', Color(0xFFFFFFFF)), ('Merah', Color(0xFFE53935)),
-  ('Biru dongker', Color(0xFF1B2A5C)), ('Biru', Color(0xFF3F51B5)), ('Hijau tua', Color(0xFF2E7D5B)),
-  ('Kuning', Color(0xFFFFC107)), ('Emas', Color(0xFFC9A227)), ('Perak', Color(0xFFBDBDBD)),
-  ('Oranye', Color(0xFFF57C00)), ('Cokelat', Color(0xFF6D4C41)), ('Pink', Color(0xFFF48FB1)),
-];
+const kThreads = kPalette;
+
+/// Warna buatan sendiri dari kode hex (mis. #7B1E2B).
+final Map<String, Color> kCustomColors = {};
+
+String hexOf(Color c) => '#${(c.value & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}';
+
+Color? parseHex(String s) {
+  var x = s.trim().replaceAll('#', '');
+  if (x.length == 3) x = x.split('').map((e) => '$e$e').join();
+  if (!RegExp(r'^[0-9a-fA-F]{6}$').hasMatch(x)) return null;
+  return Color(int.parse('FF$x', radix: 16));
+}
+
+/// Cari warna berdasarkan nama atau kode hex; warna buatan sendiri selalu ikut tampil.
+List<(String, Color)> filterColors(List<(String, Color)> base, String q) {
+  final all = [...base, for (final e in kCustomColors.entries) (e.key, e.value)];
+  final s = q.trim().toLowerCase();
+  if (s.isEmpty) return all;
+  final hx = s.replaceAll('#', '');
+  return all.where((e) => e.$1.toLowerCase().contains(s) || hexOf(e.$2).toLowerCase().contains(hx)).toList();
+}
 
 /// Halaman langkah pemesanan: judul + "Langkah n dari 3" + 3 segmen progres.
 Widget stepScreen(int n, String title, {required List<Widget> children, Widget? bottom}) => Screen(
@@ -91,9 +114,9 @@ class OutChip extends StatelessWidget {
   Widget build(BuildContext context) => GestureDetector(
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-          decoration: BoxDecoration(border: Border.all(color: C.brown), borderRadius: BorderRadius.circular(18)),
-          child: Text(text, style: t(12, color: C.brown, w: FontWeight.w700)),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+          decoration: BoxDecoration(border: Border.all(color: C.brown), borderRadius: BorderRadius.circular(20)),
+          child: Text(text, style: t(13, color: C.brown, w: FontWeight.w700)),
         ),
       );
 }
@@ -107,7 +130,7 @@ class Chips extends StatelessWidget {
   final VoidCallback? onMore;
   const Chips(this.items, this.isOn, this.onTap, {this.more, this.onMore, super.key});
   @override
-  Widget build(BuildContext context) => Wrap(spacing: 8, runSpacing: 8, children: [
+  Widget build(BuildContext context) => Wrap(spacing: 10, runSpacing: 10, children: [
         for (final x in items) Choice(x, isOn(x), () => onTap(x)),
         if (more != null) OutChip(more!, onMore ?? () {}),
       ]);
@@ -316,7 +339,7 @@ class SizeCard extends StatelessWidget {
           for (var i = 0; i < rows.length; i++) ...[
             if (i > 0) Divider(height: 1, color: C.sand),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(vertical: 12),
               child: Row(children: [
                 Expanded(
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
