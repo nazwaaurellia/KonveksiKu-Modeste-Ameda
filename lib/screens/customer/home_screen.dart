@@ -39,44 +39,19 @@ class HomeScreen extends StatelessWidget {
             ),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Row(children: [
-                CircleAvatar(
-                  radius: 28,
-                  backgroundColor: C.brown,
-                  child: o == null
-                      ? const Icon(Icons.view_in_ar_outlined, color: Colors.white, size: 26)
-                      : Text('${(o.progress * 100).round()}%',
-                          style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w800)),
-                ),
+                const CircleAvatar(radius: 28, backgroundColor: C.brown, child: Icon(Icons.view_in_ar_outlined, color: Colors.white, size: 26)),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(o == null ? 'Belum ada pesanan' : o.title,
-                        style: t(17.5, w: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    Text('Lacak Pesanan Anda', style: t(17.5, w: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
                     const SizedBox(height: 2),
-                    Text(o == null ? 'Pesanan kamu akan muncul di sini' : '#${o.id} · ${o.label} · ${o.step} dari 6 tahap',
+                    Text(o == null ? 'Pesanan kamu akan muncul di sini' : '${o.title} · ${o.label}',
                         style: t(12, color: C.muted), maxLines: 1, overflow: TextOverflow.ellipsis),
                   ]),
                 ),
               ]),
               const SizedBox(height: 18),
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: () => go(context, TrackScreen(order: o, back: true)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: C.brown,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
-                  ),
-                  child: Row(mainAxisSize: MainAxisSize.min, children: [
-                    Text('Lacak pesanan', style: t(15, color: Colors.white, w: FontWeight.w800)),
-                    const SizedBox(width: 8),
-                    const Icon(Icons.chevron_right, size: 20, color: Colors.white),
-                  ]),
-                ),
-              ),
+              Btn('Lacak pesanan', () => go(context, const TrackScreen(back: true)), icon: Icons.chevron_right, wide: true),
             ]),
           ),
           const Label('Pilih layanan'),

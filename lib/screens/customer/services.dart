@@ -13,6 +13,7 @@ class ServiceInfo {
   void startDraft() {
     final d = OrderDraft()..service = service;
     if (product.isNotEmpty) d.product = product;
+    d.initKind();
     AppStore.I.draft = d;
   }
 }

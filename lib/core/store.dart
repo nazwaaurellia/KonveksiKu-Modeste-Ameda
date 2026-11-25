@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 enum St { menungguDp, menungguVerifikasi, menungguDesain, dibordir, selesai, diambil }
 
 // Harga (bisa diubah sesuai kebutuhan)
-const kBase = {'Kemeja': 85000, 'Kaos': 55000, 'Seragam': 90000, 'Jaket': 150000, 'Topi': 35000, 'Dasi': 30000, 'Kaos Kaki': 15000, 'Hijab': 45000, 'Tas': 60000};
+const kBase = {'Kemeja': 85000, 'Kaos': 55000, 'Seragam': 90000, 'Jaket': 150000, 'Topi': 35000, 'Dasi': 30000, 'Kaos Kaki': 15000, 'Hijab': 45000, 'Rompi': 70000, 'Batik': 95000, 'Tas': 60000};
 const kBordir = {'5 cm': 5000, '8 cm': 8000, '10 cm': 12000};
+/// Harga bordir per posisi untuk semua ukuran di form pelanggan.
+const kBordirAll = {'2 cm': 3000, '3 cm': 4000, '4 cm': 4500, '5 cm': 5000, '6 cm': 6000, '8 cm': 8000, '10 cm': 12000};
 const kSteps = ['Pesanan diterima', 'DP terverifikasi', 'Desain disetujui', 'Dibordir', 'Selesai', 'Siap diambil'];
 const kMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 
@@ -113,15 +115,56 @@ class StockItem {
 
 /// Isian form pemesanan pelanggan (belum jadi pesanan sampai dikirim).
 class OrderDraft {
-  String service = 'Jahit Baju', product = 'Seragam', fabric = 'Drill', size = 'L', bsize = '8 cm', note = '';
-  bool bordir = true, hasDesign = false;
-  int qty = 48;
+  String service = 'Jahit Baju', product = 'Seragam', fabric = 'Polyester', model = '';
+  String bsize = '8 cm', note = '', text = '';
+  bool bordir = true, hasDesign = false, ownMaterial = false;
+  int itemQty = 48; // jumlah barang (khusus Bordir saja)
   Set<String> colors = {'Hitam', 'Merah'};
+  Set<String> positions = {};
+  Set<String> threads = {'Hitam', 'Kuning'};
+  /// Pilihan tunggal lain: finishing, motif, closure, stripes, logoTech, bordirType.
+  final Map<String, String> opt = {};
+  /// warna -> ukuran -> jumlah
+  final Map<String, Map<String, int>> sizes = {};
+  final List<String> extraSizes = [];
 
   bool get jahit => service == 'Jahit Baju';
-  int get unit => (jahit ? (kBase[product] ?? 0) : 0) + ((bordir || !jahit) ? (kBordir[bsize] ?? 0) : 0);
+
+  /// Jenis form: jahit, topi, dasi, hijab, kaoskaki, atau bordir (Bordir saja).
+  String get kind => !jahit
+      ? 'bordir'
+      : (const {'Topi': 'topi', 'Dasi': 'dasi', 'Hijab': 'hijab', 'Kaos Kaki': 'kaoskaki'}[product] ?? 'jahit');
+  String get unitName => kind == 'kaoskaki' ? 'pasang' : 'pcs';
+
+  int colorQty(String c) => (sizes[c]?.values ?? const <int>[]).fold(0, (a, b) => a + b);
+  int get qty => kind == 'bordir' ? itemQty : colors.fold(0, (a, c) => a + colorQty(c));
+
+  bool get withBordir => !jahit || bordir;
+  int get posCount => positions.isEmpty ? 1 : positions.length;
+  int get bordirUnit => withBordir ? (kBordirAll[bsize] ?? 6000) * posCount : 0;
+  int get baseUnit => jahit ? ((kBase[product] ?? 0) * (ownMaterial ? 0.6 : 1)).round() : 0;
+  int get unit => baseUnit + bordirUnit;
   int get total => unit * qty;
   int get dp => total ~/ 2;
+
+  /// Nilai awal sesuai jenis form (dipanggil saat layanan dipilih).
+  void initKind() {
+    const bs = {'jahit': '8 cm', 'bordir': '8 cm', 'topi': '6 cm', 'hijab': '3 cm', 'kaoskaki': '3 cm', 'dasi': '5 cm'};
+    const fb = {'jahit': 'Polyester', 'topi': 'Drill', 'dasi': 'Polyester', 'hijab': 'Voal', 'kaoskaki': 'Katun + spandex'};
+    const col = {
+      'hijab': {'Maroon', 'Biru dongker'},
+      'kaoskaki': {'Hitam', 'Biru dongker'},
+      'dasi': {'Biru dongker', 'Maroon'},
+    };
+    bsize = bs[kind] ?? '8 cm';
+    fabric = fb[kind] ?? 'Polyester';
+    colors = {...(col[kind] ?? {'Hitam', 'Merah'})};
+    positions = {};
+    sizes.clear();
+    extraSizes.clear();
+    opt.clear();
+    model = '';
+  }
 }
 
 /// Data bersama untuk pelanggan dan admin (disimpan di memori, tanpa backend).
@@ -198,7 +241,7 @@ class AppStore extends ChangeNotifier {
       service: d.service,
       fabric: d.jahit ? d.fabric : 'Bahan sendiri',
       colors: d.colors.join(', '),
-      size: d.size,
+      size: d.kind,
       bsize: d.bsize,
       note: d.note,
       qty: d.qty,
