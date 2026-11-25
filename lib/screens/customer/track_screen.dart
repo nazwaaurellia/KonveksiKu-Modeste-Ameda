@@ -8,19 +8,33 @@ import 'payment_screen.dart';
 /// dibuka untuk pesanan tertentu lewat [order].
 class TrackScreen extends StatelessWidget {
   final Order? order;
-  const TrackScreen({this.order, super.key});
+  final bool back;
+  const TrackScreen({this.order, this.back = false, super.key});
 
   @override
   Widget build(BuildContext context) => Live((context, s) {
         final o = order ?? s.activeMine ?? (s.mine.isEmpty ? null : s.mine.first);
         if (o == null) {
-          return Screen(title: 'Lacak pesanan', back: order != null, children: [
-            Box(child: Text('Belum ada pesanan. Buat pesanan baru dari menu Pesan.', style: t(12))),
+          return Screen(title: 'Lacak Pesanan', centerTitle: true, back: back, children: [
+            SizedBox(height: MediaQuery.sizeOf(context).height * 0.22),
+            Center(
+              child: Container(
+                width: 132,
+                height: 132,
+                decoration: const BoxDecoration(color: Color(0xFFF1E4C8), shape: BoxShape.circle),
+                child: const Icon(Icons.inventory_2_outlined, size: 52, color: C.brown),
+              ),
+            ),
+            const SizedBox(height: 22),
+            Text('Belum ada pesanan', textAlign: TextAlign.center, style: h(21)),
+            const SizedBox(height: 8),
+            Text('Setelah kamu memesan, status pesananmu\nakan muncul di sini.',
+                textAlign: TextAlign.center, style: t(13, color: C.muted).copyWith(height: 1.5)),
           ]);
         }
         return Screen(
           title: 'Lacak pesanan',
-          back: order != null,
+          back: back || order != null,
           action: Tag(o.label),
           bottom: o.status == St.menungguDp
               ? Btn('Bayar DP ${rp(o.dp)}', () => go(context, PaymentScreen(order: o)))

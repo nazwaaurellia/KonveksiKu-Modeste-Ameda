@@ -43,8 +43,8 @@ class Screen extends StatelessWidget {
   final String? title;
   final List<Widget> children;
   final Widget? bottom, action;
-  final bool back;
-  const Screen({this.title, required this.children, this.bottom, this.action, this.back = false, super.key});
+  final bool back, centerTitle;
+  const Screen({this.title, required this.children, this.bottom, this.action, this.back = false, this.centerTitle = false, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +55,7 @@ class Screen extends StatelessWidget {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 520),
             child: Column(children: [
-              if (title != null || back) _TopBar(title: title, back: back, action: action),
+              if (title != null || back) _TopBar(title: title, back: back, action: action, center: centerTitle),
               Expanded(
                 child: ListView(
                   keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -77,76 +77,87 @@ class Screen extends StatelessWidget {
 /// Bilah atas tetap (tidak ikut scroll): panah kembali, judul rata kiri, aksi di kanan.
 class _TopBar extends StatelessWidget {
   final String? title;
-  final bool back;
+  final bool back, center;
   final Widget? action;
-  const _TopBar({this.title, this.back = false, this.action});
+  const _TopBar({this.title, this.back = false, this.action, this.center = false});
   @override
-  Widget build(BuildContext context) => Container(
-        height: 56,
-        padding: EdgeInsets.only(left: back ? 4 : pad(context), right: pad(context)),
-        decoration: BoxDecoration(
-          color: C.cream.withOpacity(.92),
-          border: Border(bottom: BorderSide(color: C.ink.withOpacity(.10))),
-        ),
-        child: Row(children: [
-          if (back)
-            IconButton(
-              onPressed: () => Navigator.maybePop(context),
-              tooltip: 'Kembali',
-              iconSize: 26,
-              constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
-              icon: const Icon(Icons.arrow_back, color: C.ink),
-            ),
-          if (title != null)
-            Expanded(
-              child: Text(title!, style: h(20), maxLines: 1, overflow: TextOverflow.ellipsis),
-            )
-          else
-            const Spacer(),
-          if (action != null) ...[const SizedBox(width: 8), action!],
-        ]),
-      );
+  Widget build(BuildContext context) {
+    final backBtn = IconButton(
+      onPressed: () => Navigator.maybePop(context),
+      tooltip: 'Kembali',
+      iconSize: 24,
+      constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+      icon: const Icon(Icons.arrow_back_ios_new, color: C.ink),
+    );
+    return Container(
+      height: 56,
+      padding: EdgeInsets.only(left: (back || center) ? 4 : pad(context), right: center ? 4 : pad(context)),
+      decoration: BoxDecoration(
+        color: C.cream.withOpacity(.92),
+        border: Border(bottom: BorderSide(color: C.ink.withOpacity(center ? .0 : .10))),
+      ),
+      child: center
+          ? Row(children: [
+              back ? backBtn : const SizedBox(width: 48),
+              Expanded(
+                child: Text(title ?? '', textAlign: TextAlign.center, style: h(17), maxLines: 1, overflow: TextOverflow.ellipsis),
+              ),
+              action ?? const SizedBox(width: 48),
+            ])
+          : Row(children: [
+              if (back) backBtn,
+              if (title != null)
+                Expanded(child: Text(title!, style: h(20), maxLines: 1, overflow: TextOverflow.ellipsis))
+              else
+                const Spacer(),
+              if (action != null) ...[const SizedBox(width: 8), action!],
+            ]),
+    );
+  }
 }
 
-/// Tombol berbentuk pil, selalu selebar wadahnya.
-/// Ukuran: default tinggi 46 (aksi utama), [compact] tinggi 36 (di dalam kartu),
-/// [large] tinggi 52 (layar masuk/daftar). [light] = tombol sekunder bergaris tepi.
-/// [icon] = ikon kecil di kanan teks (mis. panah).
+/// Tombol pil yang ramping dan tidak melebar.
+/// Default: tinggi 42, lebar maksimal 280, di tengah (aksi utama di bawah layar).
+/// [compact]: tinggi 34, selebar isi teks (di dalam kartu). [large]: tinggi 46 (masuk/daftar).
+/// [wide]: selebar wadah (mis. di dalam kartu). [light]: tombol sekunder bergaris tepi.
 class Btn extends StatelessWidget {
   final String label;
   final VoidCallback? onTap;
-  final bool light, compact, large;
+  final bool light, compact, large, wide;
   final IconData? icon;
   final double? height;
   const Btn(this.label, this.onTap,
-      {this.light = false, this.compact = false, this.large = false, this.icon, this.height, super.key});
+      {this.light = false, this.compact = false, this.large = false, this.wide = false, this.icon, this.height, super.key});
   @override
   Widget build(BuildContext context) {
-    final h = height ?? (compact ? 36 : (large ? 52 : 46));
+    final h = height ?? (compact ? 34 : (large ? 46 : 42));
     final fg = light ? C.ink : Colors.white;
-    return SizedBox(
-      height: h,
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: onTap,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: light ? Colors.transparent : C.brown,
-          foregroundColor: fg,
-          disabledBackgroundColor: C.sand,
-          elevation: 0,
-          minimumSize: Size(64, h),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          side: light ? const BorderSide(color: C.ink, width: 1.2) : BorderSide.none,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(h / 2)),
-        ),
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Row(mainAxisSize: MainAxisSize.min, children: [
-            Text(label, style: t(compact ? 12 : (large ? 15 : 13.5), color: fg, w: FontWeight.w700)),
-            if (icon != null) ...[const SizedBox(width: 4), Icon(icon, size: compact ? 16 : 19, color: fg)],
-          ]),
-        ),
+    final button = ElevatedButton(
+      onPressed: onTap,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: light ? Colors.transparent : C.brown,
+        foregroundColor: fg,
+        disabledBackgroundColor: C.sand,
+        elevation: 0,
+        minimumSize: Size(compact ? 96 : double.infinity, h),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        padding: EdgeInsets.symmetric(horizontal: compact ? 26 : 16),
+        side: light ? const BorderSide(color: C.ink, width: 1) : BorderSide.none,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(h / 2)),
       ),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [
+        Flexible(
+          child: Text(label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: t(compact ? 12 : 13, color: fg, w: FontWeight.w600)),
+        ),
+        if (icon != null) ...[const SizedBox(width: 4), Icon(icon, size: 18, color: fg)],
+      ]),
+    );
+    if (compact) return Center(child: button);
+    return Center(
+      child: ConstrainedBox(constraints: BoxConstraints(maxWidth: wide ? double.infinity : (large ? 300 : 280)), child: button),
     );
   }
 }

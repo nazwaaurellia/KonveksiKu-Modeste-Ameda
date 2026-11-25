@@ -29,40 +29,40 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 2),
           Text('Mau pesan apa hari ini?', style: h(26)),
           const SizedBox(height: 18),
-          if (o != null)
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(.55),
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: C.ink.withOpacity(.06)),
-              ),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Row(children: [
-                  CircleAvatar(
-                    radius: 24,
-                    backgroundColor: C.brown,
-                    child: Text('${(o.progress * 100).round()}%',
-                        style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w800)),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(o.title, style: t(17, w: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
-                      const SizedBox(height: 2),
-                      Text('#${o.id} · ${o.label}', style: t(12, color: C.muted)),
-                    ]),
-                  ),
-                ]),
-                const SizedBox(height: 14),
-                Text('${o.step} dari 6 tahap selesai', style: t(12.5, color: C.ink.withOpacity(.75))),
-                const SizedBox(height: 14),
-                Btn('Lacak pesanan', () => go(context, TrackScreen(order: o)), icon: Icons.chevron_right),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFFDF6),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: C.ink.withOpacity(.07)),
+            ),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(children: [
+                CircleAvatar(
+                  radius: 28,
+                  backgroundColor: C.brown,
+                  child: o == null
+                      ? const Icon(Icons.inventory_2_outlined, color: Colors.white, size: 26)
+                      : Text('${(o.progress * 100).round()}%',
+                          style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w800)),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(o == null ? 'Belum ada pesanan' : o.title,
+                        style: t(17, w: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: 2),
+                    Text(o == null ? 'Pesanan kamu akan muncul di sini' : '#${o.id} · ${o.label} · ${o.step} dari 6 tahap',
+                        style: t(12, color: C.muted), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  ]),
+                ),
               ]),
-            )
-          else
-            Box(color: C.sand, child: Text('Belum ada pesanan aktif. Pilih layanan di bawah untuk mulai.', style: t(13))),
+              const SizedBox(height: 16),
+              Btn('Lacak pesanan', () => go(context, TrackScreen(order: o, back: true)),
+                  icon: Icons.chevron_right, wide: true),
+            ]),
+          ),
           const Label('Pilih layanan'),
           // Dua kartu per baris; tinggi kartu disamakan.
           for (var i = 0; i < kServices.length; i += 2)

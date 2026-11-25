@@ -17,13 +17,11 @@ class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
   Widget build(BuildContext context) => Screen(
         title: 'Mau pesan apa?',
         bottom: Btn('Lanjut', () {
-          kServices[sel].startDraft();
+          kPesanServices[sel].startDraft();
           go(context, const NewOrderStep1Screen());
         }),
         children: [
-          Text('Pilih layanan dulu. Detail bahan dan desain diisi di langkah berikutnya.', style: t(13, color: C.muted)),
-          const SizedBox(height: 14),
-          for (final (i, s) in kServices.indexed)
+          for (final (i, s) in kPesanServices.indexed)
             GestureDetector(
               onTap: () => setState(() => sel = i),
               child: Container(

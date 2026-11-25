@@ -12,12 +12,12 @@ import '../../core/welcome_assets.dart';
 
 // Gambar tertanam di kode -> tidak perlu folder assets / pubspec.
 final Uint8List _logo = base64Decode(kLogoBase64);
-final Uint8List _dress = base64Decode(kPhotoDress);
-final Uint8List _tote = base64Decode(kPhotoTote);
-final Uint8List _pouch = base64Decode(kPhotoPouch);
-final Uint8List _cardigan = base64Decode(kPhotoCardigan);
-final Uint8List _pants = base64Decode(kPhotoPants);
-final Uint8List _bag = base64Decode(kPhotoBag);
+const String _dress = 'assets/images/welcome_1.jpg';
+const String _tote = 'assets/images/welcome_2.jpg';
+const String _pouch = 'assets/images/welcome_3.jpg';
+const String _cardigan = 'assets/images/welcome_4.jpg';
+const String _pants = 'assets/images/welcome_5.jpg';
+const String _bag = 'assets/images/welcome_6.jpg';
 
 /// Layar sambutan setelah login. Tampil beberapa detik, lalu otomatis
 /// pindah ke halaman utama ([next]). Ketuk layar untuk melewati.
@@ -86,7 +86,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     );
   }
 
-  Widget _photo(Uint8List bytes, double angle, int i) => _appear(
+  Widget _photo(String bytes, double angle, int i) => _appear(
         i,
         Transform.rotate(
           angle: angle,
@@ -104,7 +104,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             child: ClipRRect(
               borderRadius: BorderRadius.circular(18),
               child: SizedBox.expand(
-                child: Image.memory(bytes,
+                child: Image.asset(bytes,
                     fit: BoxFit.cover,
                     gaplessPlayback: true,
                     filterQuality: FilterQuality.high),
@@ -174,7 +174,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                           const stagger = 24.0;
                           final colW = (c.maxWidth - gap) / 2;
                           final tileH = (c.maxHeight - stagger - gap * 2) / 3;
-                          Widget tile(int col, int row, Uint8List b, double a, int i) =>
+                          Widget tile(int col, int row, String b, double a, int i) =>
                               Positioned(
                                 left: col * (colW + gap),
                                 top: (col == 1 ? stagger : 0) + row * (tileH + gap),

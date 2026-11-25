@@ -45,3 +45,10 @@ class ServiceImage extends StatelessWidget {
         ),
       );
 }
+
+/// Layanan di tab "Pesan": semua layanan beranda + kaos kaki & hijab.
+const kPesanServices = <ServiceInfo>[
+  ...kServices,
+  ServiceInfo('Kaos Kaki', 'Kaos kaki polos atau bordir', 'assets/images/layanan_kaoskaki.jpg', 'Jahit Baju', 'Kaos Kaki', Icons.checkroom, C.green),
+  ServiceInfo('Hijab', 'Hijab polos atau bordir tepi', 'assets/images/layanan_hijab.jpg', 'Jahit Baju', 'Hijab', Icons.checkroom, C.red),
+];
