@@ -152,7 +152,7 @@ class Btn extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: t(compact ? 12 : 13, color: fg, w: FontWeight.w600)),
         ),
-        if (icon != null) ...[const SizedBox(width: 4), Icon(icon, size: 18, color: fg)],
+        if (icon != null) ...[const SizedBox(width: 6), Icon(icon, size: 18, color: fg)],
       ]),
     );
     if (compact) return Center(child: button);

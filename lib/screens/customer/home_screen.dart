@@ -31,7 +31,7 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 18),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(18),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: const Color(0xFFFFFDF6),
               borderRadius: BorderRadius.circular(24),
@@ -43,7 +43,7 @@ class HomeScreen extends StatelessWidget {
                   radius: 28,
                   backgroundColor: C.brown,
                   child: o == null
-                      ? const Icon(Icons.inventory_2_outlined, color: Colors.white, size: 26)
+                      ? const Icon(Icons.view_in_ar_outlined, color: Colors.white, size: 26)
                       : Text('${(o.progress * 100).round()}%',
                           style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w800)),
                 ),
@@ -51,30 +51,46 @@ class HomeScreen extends StatelessWidget {
                 Expanded(
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     Text(o == null ? 'Belum ada pesanan' : o.title,
-                        style: t(17, w: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
+                        style: t(17.5, w: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
                     const SizedBox(height: 2),
                     Text(o == null ? 'Pesanan kamu akan muncul di sini' : '#${o.id} · ${o.label} · ${o.step} dari 6 tahap',
                         style: t(12, color: C.muted), maxLines: 1, overflow: TextOverflow.ellipsis),
                   ]),
                 ),
               ]),
-              const SizedBox(height: 16),
-              Btn('Lacak pesanan', () => go(context, TrackScreen(order: o, back: true)),
-                  icon: Icons.chevron_right, wide: true),
+              const SizedBox(height: 18),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: () => go(context, TrackScreen(order: o, back: true)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: C.brown,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
+                  ),
+                  child: Row(mainAxisSize: MainAxisSize.min, children: [
+                    Text('Lacak pesanan', style: t(15, color: Colors.white, w: FontWeight.w800)),
+                    const SizedBox(width: 8),
+                    const Icon(Icons.chevron_right, size: 20, color: Colors.white),
+                  ]),
+                ),
+              ),
             ]),
           ),
           const Label('Pilih layanan'),
           // Dua kartu per baris; tinggi kartu disamakan.
-          for (var i = 0; i < kServices.length; i += 2)
+          for (var i = 0; i < kPesanServices.length; i += 2)
             Padding(
               padding: const EdgeInsets.only(bottom: 14),
               child: IntrinsicHeight(
                 child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                  Expanded(child: _ServiceCard(kServices[i], () => _start(context, kServices[i]))),
+                  Expanded(child: _ServiceCard(kPesanServices[i], () => _start(context, kPesanServices[i]))),
                   const SizedBox(width: 14),
                   Expanded(
-                    child: i + 1 < kServices.length
-                        ? _ServiceCard(kServices[i + 1], () => _start(context, kServices[i + 1]))
+                    child: i + 1 < kPesanServices.length
+                        ? _ServiceCard(kPesanServices[i + 1], () => _start(context, kPesanServices[i + 1]))
                         : const SizedBox(),
                   ),
                 ]),

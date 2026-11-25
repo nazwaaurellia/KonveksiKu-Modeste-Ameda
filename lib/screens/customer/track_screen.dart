@@ -22,7 +22,7 @@ class TrackScreen extends StatelessWidget {
                 width: 132,
                 height: 132,
                 decoration: const BoxDecoration(color: Color(0xFFF1E4C8), shape: BoxShape.circle),
-                child: const Icon(Icons.inventory_2_outlined, size: 52, color: C.brown),
+                child: const Icon(Icons.view_in_ar_outlined, size: 52, color: C.brown),
               ),
             ),
             const SizedBox(height: 22),
