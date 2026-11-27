@@ -16,6 +16,7 @@ class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
   @override
   Widget build(BuildContext context) => Screen(
         title: 'Mau pesan apa?',
+        back: true,
         bottom: Btn('Lanjut', () {
           kPesanServices[sel].startDraft();
           go(context, const NewOrderStep1Screen());

@@ -236,7 +236,8 @@ class UploadBox extends StatelessWidget {
   final String title, sub;
   final bool attached;
   final VoidCallback onTap;
-  const UploadBox(this.attached, this.onTap, {this.title = 'Unggah desain atau logo', this.sub = 'PNG, JPG, atau file desain', super.key});
+  final String? fileName;
+  const UploadBox(this.attached, this.onTap, {this.title = 'Unggah desain atau logo', this.sub = 'PNG, JPG, atau file desain', this.fileName, super.key});
   @override
   Widget build(BuildContext context) => GestureDetector(
         onTap: onTap,
@@ -248,9 +249,12 @@ class UploadBox extends StatelessWidget {
             child: Column(children: [
               Icon(attached ? Icons.check_circle : Icons.upload, color: attached ? C.green : C.brown, size: 26),
               const SizedBox(height: 8),
-              Text(attached ? 'Berkas dilampirkan' : title, style: t(14, w: FontWeight.w800, color: attached ? C.green : C.ink)),
+              Text(attached ? (fileName ?? 'Berkas dilampirkan') : title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: t(14, w: FontWeight.w800, color: attached ? C.green : C.ink)),
               const SizedBox(height: 3),
-              Text(attached ? 'Ketuk lagi untuk melepas' : sub, style: t(12, color: C.muted), textAlign: TextAlign.center),
+              Text(attached ? 'Ketuk untuk mengganti berkas' : sub, style: t(12, color: C.muted), textAlign: TextAlign.center),
             ]),
           ),
         ),
@@ -307,10 +311,10 @@ class StepBtn extends StatelessWidget {
   Widget build(BuildContext context) => GestureDetector(
         onTap: onTap,
         child: Container(
-          width: 38,
-          height: 38,
+          width: 32,
+          height: 32,
           decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: C.brown, width: 1.2)),
-          child: Icon(icon, size: 20, color: C.brown),
+          child: Icon(icon, size: 18, color: C.brown),
         ),
       );
 }
@@ -322,7 +326,7 @@ class QtyStepper extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(mainAxisSize: MainAxisSize.min, children: [
         StepBtn(Icons.remove, () => onChanged(value > 0 ? value - 1 : 0)),
-        SizedBox(width: 44, child: Center(child: Text('$value', style: h(18)))),
+        SizedBox(width: 38, child: Center(child: Text('$value', style: h(18)))),
         StepBtn(Icons.add, () => onChanged(value + 1)),
       ]);
 }
@@ -339,12 +343,12 @@ class SizeCard extends StatelessWidget {
           for (var i = 0; i < rows.length; i++) ...[
             if (i > 0) Divider(height: 1, color: C.sand),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
+              padding: const EdgeInsets.symmetric(vertical: 8),
               child: Row(children: [
                 Expanded(
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(rows[i].$1, style: t(15, w: FontWeight.w800)),
-                    if (rows[i].$2 != null) Text(rows[i].$2!, style: t(12, color: C.muted)),
+                    Text(rows[i].$1, style: t(14, w: FontWeight.w700)),
+                    if (rows[i].$2 != null) Text(rows[i].$2!, style: t(11.5, color: C.muted)),
                   ]),
                 ),
                 QtyStepper(qty[rows[i].$1] ?? 0, (v) => onChanged(rows[i].$1, v)),
@@ -355,8 +359,8 @@ class SizeCard extends StatelessWidget {
       );
 }
 
-Future<String?> askText(BuildContext context, String title, String hint) {
-  final c = TextEditingController();
+Future<String?> askText(BuildContext context, String title, String hint, {String initial = ''}) {
+  final c = TextEditingController(text: initial);
   return showDialog<String>(
     context: context,
     builder: (_) => AlertDialog(

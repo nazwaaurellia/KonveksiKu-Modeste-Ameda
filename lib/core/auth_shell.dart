@@ -27,7 +27,9 @@ class AuthShell extends StatelessWidget {
         opacity: 2.4,
         scale: 1.6,
         outline: false,
-        child: SafeArea(
+        child: Stack(children: [
+          Positioned.fill(
+            child: SafeArea(
           child: LayoutBuilder(
             builder: (context, box) => Center(
               child: ConstrainedBox(
@@ -55,6 +57,20 @@ class AuthShell extends StatelessWidget {
             ),
           ),
         ),
+          ),
+          if (Navigator.of(context).canPop())
+            Positioned(
+              top: 0,
+              left: 4,
+              child: SafeArea(
+                child: IconButton(
+                  onPressed: () => Navigator.maybePop(context),
+                  tooltip: 'Kembali',
+                  icon: const Icon(Icons.arrow_back_ios_new, color: C.ink),
+                ),
+              ),
+            ),
+        ]),
       ),
     );
   }

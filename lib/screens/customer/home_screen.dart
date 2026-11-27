@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/files.dart';
 import '../../core/store.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
@@ -20,11 +21,7 @@ class HomeScreen extends StatelessWidget {
         return Screen(children: [
           Row(children: [
             Expanded(child: Text('Selamat siang, ${s.userName}', style: t(14, color: C.muted))),
-            CircleAvatar(
-              radius: 20,
-              backgroundColor: C.gold,
-              child: Text(s.userName.isEmpty ? '?' : s.userName[0].toUpperCase(), style: t(16, w: FontWeight.w800)),
-            ),
+            UserAvatar(radius: 20, name: s.userName, bg: C.gold, fg: C.ink),
           ]),
           const SizedBox(height: 2),
           Text('Mau pesan apa hari ini?', style: h(26)),

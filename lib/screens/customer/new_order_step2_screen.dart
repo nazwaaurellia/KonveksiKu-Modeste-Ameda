@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/files.dart';
 import '../../core/order_ui.dart';
 import '../../core/store.dart';
 import '../../core/theme.dart';
@@ -79,6 +80,17 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
   final q = TextEditingController();
   final qt = TextEditingController();
   int tab = 0;
+  String? design;
+
+  Future<void> _pickDesign() async {
+    final f = await pickFile(ext: kDesignExt);
+    if (f != null) {
+      setState(() {
+        design = f.name;
+        d.hasDesign = true;
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -184,7 +196,7 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
           ]),
         ),
         const SectionRow('Desain'),
-        UploadBox(d.hasDesign, () => setState(() => d.hasDesign = !d.hasDesign)),
+        UploadBox(d.hasDesign, _pickDesign, fileName: design),
         const SizedBox(height: 12),
         PillField('Atau tulis nama / teks untuk dibordir', onChanged: (v) => d.text = v),
         SectionRow('Posisi bordir', trailing: 'Untuk ${d.product.toLowerCase()}'),
@@ -193,8 +205,6 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
         const Label('Ukuran bordir'),
         _bsizeChips(const ['5 cm', '8 cm', '10 cm']),
         SectionRow('Warna benang', trailing: '${d.threads.length} dipilih'),
-        ColorGrid(tp, d.threads, (x) => setState(() => d.threads.contains(x) ? d.threads.remove(x) : d.threads.add(x))),
-        const SizedBox(height: 14),
         PillField('Cari nama atau kode warna benang', ctrl: qt, search: true, onChanged: (_) => setState(() {})),
         if (tHex != null && !tp.any((e) => hexOf(e.$2) == hexOf(tHex)))
           Padding(
@@ -209,6 +219,8 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
                   })),
             ),
           ),
+        const SizedBox(height: 14),
+        ColorGrid(tp, d.threads, (x) => setState(() => d.threads.contains(x) ? d.threads.remove(x) : d.threads.add(x))),
         const Label('Jumlah barang'),
         Box(
           child: Row(children: [
@@ -243,11 +255,8 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
       bottom: _totalBar('Lanjut ke pembayaran'),
       children: [
         const SectionRow('Desain'),
-        UploadBox(d.hasDesign, () => setState(() => d.hasDesign = !d.hasDesign)),
+        UploadBox(d.hasDesign, _pickDesign, fileName: design),
         SectionRow(c.colorLabel, trailing: '${d.colors.length} dipilih'),
-        if (palette.isEmpty && !canAdd) const Sub('Warna tidak ditemukan. Coba kode hex, mis. #7B1E2B.'),
-        ColorGrid(palette, d.colors, (x) => setState(() => d.colors.contains(x) ? d.colors.remove(x) : d.colors.add(x))),
-        const SizedBox(height: 14),
         PillField('Cari nama atau kode warna, mis. #1F2A5C', ctrl: q, search: true, onChanged: (_) => setState(() {})),
         if (canAdd)
           Padding(
@@ -262,6 +271,9 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
                   })),
             ),
           ),
+        const SizedBox(height: 14),
+        if (palette.isEmpty && !canAdd) const Sub('Warna tidak ditemukan. Coba kode hex, mis. #7B1E2B.'),
+        ColorGrid(palette, d.colors, (x) => setState(() => d.colors.contains(x) ? d.colors.remove(x) : d.colors.add(x))),
         if (c.sizeNote != null) ...[const Label('Ukuran topi'), Sub(c.sizeNote!)],
         for (final (label, key, items) in c.pre) ...[
           Label(label),

@@ -12,7 +12,8 @@ const kSteps = ['Pesanan diterima', 'DP terverifikasi', 'Desain disetujui', 'Dib
 const kMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 
 class Order {
-  final String id, title, customer, product, service, fabric, colors, size, bsize, note, created;
+  final String id, title, product, service, fabric, colors, size, bsize, note, created;
+  String customer;
   final int qty, unit;
   St status;
   int dpPaid, paidWeek;
@@ -215,6 +216,18 @@ class AppStore extends ChangeNotifier {
   void register(String name, String email) => _users[email.trim().toLowerCase()] = name.trim();
 
   // ---------- Pelanggan ----------
+  /// Ubah nama akun; pesanan lama ikut berganti pemilik agar tetap muncul di Lacak.
+  void rename(String name) {
+    final v = name.trim();
+    if (v.isEmpty || v == userName) return;
+    for (final o in orders) {
+      if (o.customer == userName) o.customer = v;
+    }
+    _users[userEmail.toLowerCase()] = v;
+    userName = v;
+    notifyListeners();
+  }
+
   List<Order> get mine => orders.where((o) => o.customer == userName).toList();
 
   Order? get activeMine {

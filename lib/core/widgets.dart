@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'floral_bg.dart';
 import 'store.dart';
+import 'shell.dart';
 import 'theme.dart';
 
 String rp(int n) {
@@ -44,7 +45,8 @@ class Screen extends StatelessWidget {
   final List<Widget> children;
   final Widget? bottom, action;
   final bool back, centerTitle;
-  const Screen({this.title, required this.children, this.bottom, this.action, this.back = false, this.centerTitle = false, super.key});
+  final VoidCallback? onBack;
+  const Screen({this.title, required this.children, this.bottom, this.action, this.back = false, this.centerTitle = false, this.onBack, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +57,7 @@ class Screen extends StatelessWidget {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 520),
             child: Column(children: [
-              if (title != null || back) _TopBar(title: title, back: back, action: action, center: centerTitle),
+              if (title != null || back) _TopBar(title: title, back: back, action: action, center: centerTitle, onBack: onBack),
               Expanded(
                 child: ListView(
                   keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -79,13 +81,22 @@ class _TopBar extends StatelessWidget {
   final String? title;
   final bool back, center;
   final Widget? action;
-  const _TopBar({this.title, this.back = false, this.action, this.center = false});
+  final VoidCallback? onBack;
+  const _TopBar({this.title, this.back = false, this.action, this.center = false, this.onBack});
   @override
   Widget build(BuildContext context) {
     final backBtn = IconButton(
-      onPressed: () => Navigator.maybePop(context),
+      onPressed: onBack ??
+          () {
+            final nav = Navigator.of(context);
+            if (nav.canPop()) {
+              nav.pop();
+            } else {
+              ShellScope.maybeOf(context)?.setTab(0);
+            }
+          },
       tooltip: 'Kembali',
-      iconSize: 24,
+      iconSize: 22,
       constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
       icon: const Icon(Icons.arrow_back_ios_new, color: C.ink),
     );
@@ -100,14 +111,14 @@ class _TopBar extends StatelessWidget {
           ? Row(children: [
               back ? backBtn : const SizedBox(width: 48),
               Expanded(
-                child: Text(title ?? '', textAlign: TextAlign.center, style: h(17), maxLines: 1, overflow: TextOverflow.ellipsis),
+                child: Text(title ?? '', textAlign: TextAlign.center, style: h(21), maxLines: 1, overflow: TextOverflow.ellipsis),
               ),
               action ?? const SizedBox(width: 48),
             ])
           : Row(children: [
               if (back) backBtn,
               if (title != null)
-                Expanded(child: Text(title!, style: h(20), maxLines: 1, overflow: TextOverflow.ellipsis))
+                Expanded(child: Text(title!, style: h(22), maxLines: 1, overflow: TextOverflow.ellipsis))
               else
                 const Spacer(),
               if (action != null) ...[const SizedBox(width: 8), action!],

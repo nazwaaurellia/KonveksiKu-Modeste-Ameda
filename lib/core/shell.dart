@@ -12,10 +12,23 @@ class Shell extends StatefulWidget {
   State<Shell> createState() => _ShellState();
 }
 
+/// Memberi akses ke pergantian tab (dipakai tombol kembali di halaman tab).
+class ShellScope extends InheritedWidget {
+  final int index;
+  final void Function(int) setTab;
+  const ShellScope({required this.index, required this.setTab, required super.child, super.key});
+  static ShellScope? maybeOf(BuildContext c) => c.dependOnInheritedWidgetOfExactType<ShellScope>();
+  @override
+  bool updateShouldNotify(ShellScope old) => old.index != index;
+}
+
 class _ShellState extends State<Shell> {
   late int i = widget.initial;
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) => ShellScope(
+      index: i,
+      setTab: (v) => setState(() => i = v),
+      child: Scaffold(
         body: IndexedStack(index: i, children: widget.pages),
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
@@ -57,5 +70,5 @@ class _ShellState extends State<Shell> {
             ),
           ),
         ),
-      );
+      ));
 }

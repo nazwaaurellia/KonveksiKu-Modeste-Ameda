@@ -95,7 +95,7 @@ class _TrackScreenState extends State<TrackScreen> {
       final done = all.where((o) => o.isDone).toList();
       final list = running ? run : done;
       if (all.isEmpty) {
-        return Screen(title: 'Lacak Pesanan', centerTitle: true, back: widget.back, children: [
+        return Screen(title: 'Lacak Pesanan', centerTitle: true, back: true, children: [
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.22),
           Center(
             child: Container(
@@ -112,7 +112,7 @@ class _TrackScreenState extends State<TrackScreen> {
               textAlign: TextAlign.center, style: t(13, color: C.muted).copyWith(height: 1.5)),
         ]);
       }
-      return Screen(title: 'Lacak pesanan', back: widget.back, children: [
+      return Screen(title: 'Lacak pesanan', back: true, children: [
         Container(
           padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(color: C.sand, borderRadius: BorderRadius.circular(26)),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/files.dart';
 import '../../core/store.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
@@ -14,7 +15,7 @@ class HelpLink extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(10),
             child: Row(mainAxisSize: MainAxisSize.min, children: [
-              const Icon(Icons.chat_bubble_outline, size: 18, color: C.brown),
+              const ChatIcon(size: 18),
               const SizedBox(width: 8),
               Text('Butuh bantuan? ', style: t(13, color: C.brown, w: FontWeight.w600)),
               Text('Chat admin',
@@ -28,7 +29,8 @@ class HelpLink extends StatelessWidget {
 class _Msg {
   final String text, time;
   final bool me;
-  _Msg(this.text, this.time, this.me);
+  final PickedFile? file;
+  _Msg(this.text, this.time, this.me, {this.file});
 }
 
 class ChatScreen extends StatefulWidget {
@@ -58,6 +60,12 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  Future<void> _attach() async {
+    final f = await pickFile();
+    if (f == null) return;
+    setState(() => msgs.add(_Msg('', _now(), true, file: f)));
+  }
+
   @override
   void dispose() {
     input.dispose();
@@ -82,11 +90,11 @@ class _ChatScreenState extends State<ChatScreen> {
                   const CircleAvatar(
                     radius: 22,
                     backgroundColor: C.brown,
-                    child: Text('MJ', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
+                    child: Text('MA', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
                   ),
                   const SizedBox(width: 12),
                   Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text('Admin Maju Jaya', style: t(16, w: FontWeight.w800)),
+                    Text('Modeste Ameda', style: t(16, w: FontWeight.w800)),
                     Text('Online', style: t(12, color: C.green, w: FontWeight.w700)),
                   ]),
                 ]),
@@ -158,7 +166,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     height: 44,
                     decoration: const BoxDecoration(color: C.sand, shape: BoxShape.circle),
                     child: IconButton(
-                      onPressed: () => toast(context, 'Lampiran belum tersedia di versi ini'),
+                      onPressed: _attach,
                       icon: const Icon(Icons.attach_file, color: C.brown, size: 22),
                     ),
                   ),
@@ -212,7 +220,15 @@ class _Bubble extends StatelessWidget {
             borderRadius: BorderRadius.circular(18),
           ),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(m.text, style: t(14, color: m.me ? Colors.white : C.ink, w: m.me ? FontWeight.w600 : FontWeight.w500)),
+            if (m.file != null)
+              (m.file!.isImage && m.file!.bytes != null)
+                  ? ClipRRect(borderRadius: BorderRadius.circular(12), child: Image.memory(m.file!.bytes!, width: 200, fit: BoxFit.cover))
+                  : Row(mainAxisSize: MainAxisSize.min, children: [
+                      Icon(Icons.insert_drive_file_outlined, size: 20, color: m.me ? Colors.white : C.brown),
+                      const SizedBox(width: 8),
+                      Flexible(child: Text(m.file!.name, style: t(13, color: m.me ? Colors.white : C.ink, w: FontWeight.w600))),
+                    ]),
+            if (m.text.isNotEmpty) Text(m.text, style: t(14, color: m.me ? Colors.white : C.ink, w: m.me ? FontWeight.w600 : FontWeight.w500)),
             const SizedBox(height: 4),
             Text(m.time, style: t(11, color: m.me ? Colors.white70 : C.muted)),
           ]),

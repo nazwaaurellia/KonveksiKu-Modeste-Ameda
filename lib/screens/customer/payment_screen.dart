@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../core/files.dart';
 import '../../core/order_ui.dart';
 import '../../core/store.dart';
 import '../../core/theme.dart';
@@ -25,12 +26,27 @@ class PaymentScreen extends StatefulWidget {
 
 class _PaymentScreenState extends State<PaymentScreen> {
   String method = 'Transfer bank', wallet = 'DANA', bank = 'BRI';
-  bool attached = false;
+  String? proof;
+
+  Future<void> _pickProof() async {
+    final f = await pickFile(ext: kProofExt);
+    if (f != null) setState(() => proof = f.name);
+  }
+
+  Future<void> _saveQr() async {
+    try {
+      final data = await rootBundle.load('assets/images/qris.png');
+      final ok = await saveBytes('qris-konveksiku.png', data.buffer.asUint8List());
+      if (mounted) toast(context, ok ? 'QR disimpan' : 'QR gagal disimpan');
+    } catch (_) {
+      if (mounted) toast(context, 'QR gagal disimpan');
+    }
+  }
 
   String get _methodLabel => method == 'E-wallet' ? 'E-wallet $wallet' : (method == 'Transfer bank' ? 'Transfer bank $bank' : 'QRIS');
 
   void _send(int amount) {
-    if (!attached) return toast(context, 'Unggah bukti pembayaran dulu');
+    if (proof == null) return toast(context, 'Unggah bukti pembayaran dulu');
     final s = AppStore.I;
     Order o;
     if (widget.order != null) {
@@ -50,17 +66,17 @@ class _PaymentScreenState extends State<PaymentScreen> {
   Widget _radioRow(String name, bool on, VoidCallback onTap, {bool last = false}) => InkWell(
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.symmetric(vertical: 9),
           decoration: BoxDecoration(border: last ? null : Border(bottom: BorderSide(color: C.sand))),
           child: Row(children: [
-            CircleAvatar(radius: 22, backgroundColor: const Color(0xFFF1E4C8), child: Text(name[0], style: t(16, color: C.brown, w: FontWeight.w800))),
-            const SizedBox(width: 14),
-            Expanded(child: Text(name, style: t(16, w: FontWeight.w700))),
+            CircleAvatar(radius: 16, backgroundColor: const Color(0xFFF1E4C8), child: Text(name[0], style: t(13, color: C.brown, w: FontWeight.w800))),
+            const SizedBox(width: 12),
+            Expanded(child: Text(name, style: t(14, w: FontWeight.w600))),
             Container(
-              width: 26,
-              height: 26,
+              width: 22,
+              height: 22,
               decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: on ? C.brown : const Color(0xFFD1BC8E), width: 2)),
-              child: on ? Center(child: Container(width: 12, height: 12, decoration: const BoxDecoration(color: C.brown, shape: BoxShape.circle))) : null,
+              child: on ? Center(child: Container(width: 10, height: 10, decoration: const BoxDecoration(color: C.brown, shape: BoxShape.circle))) : null,
             ),
           ]),
         ),
@@ -68,18 +84,50 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   Widget _destination(int amount) {
     if (method == 'QRIS') {
-      return Box(
-        child: Column(children: [
-          Text('Scan QRIS dengan aplikasi bank atau e-wallet', style: t(12, color: C.muted)),
-          const SizedBox(height: 10),
-          const Icon(Icons.qr_code_2, size: 150, color: C.ink),
-          Divider(color: C.sand),
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text('Nominal', style: t(14)),
-            Text(rp(amount), style: h(18)),
+      return Column(children: [
+        Box(
+          child: Column(children: [
+            Text('Scan QRIS untuk membayar', style: t(15, w: FontWeight.w800)),
+            const SizedBox(height: 14),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: const Color(0xFFE6D7B5)),
+              ),
+              child: Image.asset(
+                'assets/images/qris.png',
+                width: 220,
+                height: 220,
+                filterQuality: FilterQuality.none,
+                errorBuilder: (_, __, ___) => const Icon(Icons.qr_code_2, size: 200, color: C.ink),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(rp(amount), style: h(30, C.brown)),
+            const SizedBox(height: 8),
+            Text('a.n. $_holder\nBisa dibayar lewat aplikasi bank atau e-wallet apa saja.',
+                textAlign: TextAlign.center, style: t(12.5, color: C.muted).copyWith(height: 1.45)),
+            const SizedBox(height: 14),
+            OutlinedButton.icon(
+              onPressed: _saveQr,
+              icon: const Icon(Icons.file_download_outlined, size: 18, color: C.brown),
+              label: Text('Simpan QR ke galeri', style: t(13, color: C.brown, w: FontWeight.w700)),
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: C.brown),
+                shape: const StadiumBorder(),
+                minimumSize: const Size(0, 40),
+                padding: const EdgeInsets.symmetric(horizontal: 22),
+              ),
+            ),
           ]),
-        ]),
-      );
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Text('Pastikan nominal sesuai sebelum membayar.', style: t(12, color: C.muted)),
+        ),
+      ]);
     }
     final isW = method == 'E-wallet';
     final name = isW ? wallet : bank;
@@ -183,17 +231,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
         const SizedBox(height: 4),
         _destination(amount),
         GestureDetector(
-          onTap: () => setState(() => attached = !attached),
+          onTap: _pickProof,
           child: CustomPaint(
             painter: _DashedBox(),
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 16),
               child: Column(children: [
-                Text(attached ? '✓ bukti-pembayaran.jpg dilampirkan' : 'Unggah bukti pembayaran',
-                    style: t(15, w: FontWeight.w800, color: attached ? C.green : C.ink)),
+                Text(proof != null ? '✓ $proof' : 'Unggah bukti pembayaran',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: t(15, w: FontWeight.w800, color: proof != null ? C.green : C.ink)),
                 const SizedBox(height: 4),
-                Text('Admin memverifikasi maksimal 1 jam', style: t(13, color: C.muted)),
+                Text(proof != null ? 'Ketuk untuk mengganti berkas' : 'Admin memverifikasi maksimal 1 jam', style: t(13, color: C.muted)),
               ]),
             ),
           ),
@@ -256,6 +306,8 @@ class PaymentSentScreen extends StatelessWidget {
   const PaymentSentScreen(this.o, this.method, this.amount, this.remainder, {super.key});
   @override
   Widget build(BuildContext context) => Screen(
+        back: true,
+        onBack: () => goReplaceAll(context, const CustomerShell()),
         bottom: Column(mainAxisSize: MainAxisSize.min, children: [
           Btn('Lacak pesanan', () => goReplaceAll(context, const CustomerShell(initial: 2)), icon: Icons.chevron_right),
           const SizedBox(height: 8),
@@ -299,6 +351,8 @@ class PaymentSavedScreen extends StatelessWidget {
   const PaymentSavedScreen(this.o, {super.key});
   @override
   Widget build(BuildContext context) => Screen(
+        back: true,
+        onBack: () => goReplaceAll(context, const CustomerShell()),
         bottom: Column(mainAxisSize: MainAxisSize.min, children: [
           Btn('Bayar DP sekarang', () => go(context, PaymentScreen(order: o)), icon: Icons.chevron_right),
           const SizedBox(height: 8),
