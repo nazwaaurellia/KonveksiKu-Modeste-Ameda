@@ -62,7 +62,7 @@ class _TrackScreenState extends State<TrackScreen> {
           Row(children: [
             Tag(o.label, o.isDone ? C.green : C.gold),
             const Spacer(),
-            Text('${o.step} dari 6 tahap selesai', style: t(12, color: C.muted)),
+            Text('${o.step} dari ${o.stepCount} tahap selesai', style: t(12, color: C.muted)),
           ]),
           const SizedBox(height: 10),
           ClipRRect(

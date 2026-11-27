@@ -262,7 +262,7 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
     final List<(String, String?)> rows = [...c.rows, for (final e in d.extraSizes) (e, null)];
     Map<String, int>? cur;
     if (chosen.isNotEmpty) {
-      cur = d.sizes.putIfAbsent(chosen[tab], () => {for (var i = 0; i < c.rows.length; i++) c.rows[i].$1: c.defaults[i]});
+      cur = d.sizes.putIfAbsent(chosen[tab], () => {for (var i = 0; i < c.rows.length; i++) c.rows[i].$1: 0});
     }
     return stepScreen(
       2,

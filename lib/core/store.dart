@@ -19,6 +19,9 @@ class Order {
   int dpPaid, paidWeek;
   bool revisi, hasDesign;
   String operator;
+  String detail; // ringkasan detail (posisi bordir, bahan, warna) untuk invoice
+  bool withBordir;
+  int prodStage; // tahap produksi yang sedang berjalan (0 = pertama)
 
   Order({
     required this.id,
@@ -40,6 +43,9 @@ class Order {
     this.revisi = false,
     this.hasDesign = true,
     this.operator = '-',
+    this.detail = '',
+    this.withBordir = true,
+    this.prodStage = 0,
   });
 
   int get total => qty * unit;
@@ -47,7 +53,41 @@ class Order {
   int get remaining => total - dpPaid;
   bool get isDone => status == St.selesai || status == St.diambil;
 
-  /// Jumlah tahap yang sudah selesai (0..6).
+  /// Jenis pesanan: bordir (Bordir saja), topi, dasi, hijab, kaoskaki, atau jahit.
+  String get kind => service == 'Bordir Saja'
+      ? 'bordir'
+      : (const {'Topi': 'topi', 'Dasi': 'dasi', 'Hijab': 'hijab', 'Kaos Kaki': 'kaoskaki'}[product] ?? 'jahit');
+
+  /// Tahap produksi sesuai jenis pesanan. Foto progress mengikuti tahap yang aktif.
+  List<String> get prodSteps {
+    switch (kind) {
+      case 'bordir':
+        return ['Dibordir'];
+      case 'topi':
+      case 'dasi':
+      case 'hijab':
+        return ['Diproduksi'];
+      case 'kaoskaki':
+        return ['Dirajut'];
+      default:
+        return ['Dijahit', if (withBordir) 'Dibordir'];
+    }
+  }
+
+  List<String> get steps => [
+        'Pesanan diterima',
+        'DP terverifikasi',
+        if (kind == 'bordir') 'Barang diterima',
+        'Desain disetujui',
+        ...prodSteps,
+        'Selesai',
+        'Siap diambil',
+      ];
+
+  int get stepCount => steps.length;
+  int get _stage => prodStage.clamp(0, prodSteps.length - 1);
+
+  /// Jumlah tahap yang sudah selesai.
   int get step {
     switch (status) {
       case St.menungguDp:
@@ -56,15 +96,15 @@ class Order {
       case St.menungguDesain:
         return 2;
       case St.dibordir:
-        return 3;
+        return (kind == 'bordir' ? 4 : 3) + _stage;
       case St.selesai:
-        return 5;
+        return stepCount - 1;
       case St.diambil:
-        return 6;
+        return stepCount;
     }
   }
 
-  double get progress => step / 6;
+  double get progress => step / stepCount;
 
   String get label {
     switch (status) {
@@ -73,9 +113,9 @@ class Order {
       case St.menungguVerifikasi:
         return 'Verifikasi DP';
       case St.menungguDesain:
-        return revisi ? 'Perlu revisi' : 'Menunggu desain';
+        return revisi ? 'Perlu revisi' : (kind == 'bordir' ? 'Menunggu barang' : 'Menunggu desain');
       case St.dibordir:
-        return 'Dibordir';
+        return prodSteps[_stage];
       case St.selesai:
         return 'Selesai';
       case St.diambil:
@@ -90,7 +130,7 @@ class Order {
       case St.menungguVerifikasi:
         return 'Menunggu verifikasi admin';
       case St.menungguDesain:
-        return 'Menunggu persetujuan desain';
+        return kind == 'bordir' ? 'Menunggu barang diantar ke toko' : 'Menunggu persetujuan desain';
       case St.dibordir:
         return 'Sedang berjalan';
       case St.selesai:
@@ -101,7 +141,7 @@ class Order {
   }
 
   List<List<String>> get timeline => [
-        for (var i = 0; i < kSteps.length; i++) [kSteps[i], i == step ? _now : (i == 0 ? created : '')],
+        for (var i = 0; i < steps.length; i++) [steps[i], i == step ? _now : (i == 0 ? created : '')],
       ];
 }
 
@@ -119,7 +159,7 @@ class OrderDraft {
   String service = 'Jahit Baju', product = 'Seragam', fabric = 'Polyester', model = '';
   String bsize = '8 cm', note = '', text = '';
   bool bordir = true, hasDesign = false, ownMaterial = false;
-  int itemQty = 48; // jumlah barang (khusus Bordir saja)
+  int itemQty = 0; // jumlah barang (khusus Bordir saja), diisi pelanggan
   Set<String> colors = {'Hitam', 'Merah'};
   Set<String> positions = {};
   Set<String> threads = {'Hitam', 'Kuning'};
@@ -180,7 +220,7 @@ class AppStore extends ChangeNotifier {
   final Map<String, String> _users = {};
 
   final List<Order> orders = [
-    Order(id: 'BK-0142', title: 'Seragam PKK', customer: 'Sari', product: 'Seragam', qty: 48, unit: 8000, status: St.dibordir, dpPaid: 192000, paidWeek: 4, operator: 'Dani', created: '10 Nov', note: 'Logo di dada kiri, benang emas agak tebal.'),
+    Order(id: 'BK-0142', title: 'Seragam PKK', customer: 'Sari', product: 'Seragam', service: 'Bordir Saja', fabric: 'Bahan sendiri', detail: 'Dada kiri · 8 cm · benang hitam dan kuning', qty: 48, unit: 8000, status: St.dibordir, dpPaid: 192000, paidWeek: 4, operator: 'Dani', created: '10 Nov', note: 'Logo di dada kiri, benang emas agak tebal.'),
     Order(id: 'BK-0141', title: 'Topi komunitas', customer: 'Sari', product: 'Topi', service: 'Bordir Saja', fabric: 'Bahan sendiri', qty: 100, unit: 8000, status: St.menungguDp, created: '12 Nov'),
     Order(id: 'BK-0139', title: 'Jaket angkatan', customer: 'Sari', product: 'Jaket', qty: 30, unit: 90000, status: St.diambil, dpPaid: 2700000, paidWeek: 1, operator: 'Rina', created: '28 Okt'),
     Order(id: 'BK-0138', title: 'Tas seminar', customer: 'Sari', product: 'Tas', qty: 60, unit: 60000, status: St.selesai, dpPaid: 1800000, paidWeek: 3, operator: 'Dani', created: '5 Nov'),
@@ -273,6 +313,10 @@ class AppStore extends ChangeNotifier {
       qty: d.qty,
       unit: d.unit,
       hasDesign: d.hasDesign,
+      withBordir: d.withBordir,
+      detail: d.kind == 'bordir'
+          ? '${d.positions.join(', ')} · ${d.bsize} · benang ${d.threads.join(' dan ').toLowerCase()}'
+          : '${d.fabric} · ${d.colors.join(', ')}${d.withBordir ? ' · bordir ${d.bsize} (${d.positions.join(', ')})' : ''}',
       status: proof ? St.menungguVerifikasi : St.menungguDp,
       created: _today(),
     );
@@ -298,6 +342,7 @@ class AppStore extends ChangeNotifier {
   void approveDesign(Order o) {
     o.revisi = false;
     o.operator = 'Dani';
+    o.prodStage = 0;
     o.status = St.dibordir;
     _use('Emas');
     notifyListeners();
@@ -306,6 +351,16 @@ class AppStore extends ChangeNotifier {
   void requestRevision(Order o) {
     o.revisi = true;
     notifyListeners();
+  }
+
+  /// Lanjut ke tahap produksi berikutnya; jika sudah tahap terakhir, tandai selesai.
+  void advanceStage(Order o) {
+    if (o.prodStage < o.prodSteps.length - 1) {
+      o.prodStage++;
+      notifyListeners();
+    } else {
+      markDone(o);
+    }
   }
 
   void markDone(Order o) {

@@ -13,7 +13,7 @@ const _wallets = ['GoPay', 'OVO', 'DANA', 'ShopeePay', 'LinkAja'];
 const _banks = ['BRI', 'BCA', 'Mandiri'];
 const _holder = 'Nazwa Aurellia Ababiluna Putri';
 const _walletNo = '082338958254';
-const _bankNo = {'BRI': '1234 5678 90', 'BCA': '0987 6543 21', 'Mandiri': '1122 3344 55'};
+const _bankNo = {'BRI': '3643 0104 1485 539', 'BCA': '0987 6543 21', 'Mandiri': '1122 3344 55'};
 
 /// Pembayaran DP. Jika [order] diisi, pelanggan membayar untuk pesanan yang sudah ada.
 /// [remainder] = pelunasan sisa tagihan.

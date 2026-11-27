@@ -4,6 +4,7 @@ import '../../core/store.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
 import 'chat_screen.dart';
+import 'invoice_screen.dart';
 import 'payment_screen.dart';
 
 /// Detail satu pesanan: progres, tahapan, ringkasan pembayaran.
@@ -22,6 +23,8 @@ class TrackDetailScreen extends StatelessWidget {
 
   Widget _step(BuildContext context, Order o, int i) {
     final cur = i == o.step && o.status != St.diambil;
+    final photo = cur && o.status == St.dibordir; // foto progress ikut tahap produksi yang aktif
+    final last = o.stepCount - 1;
     final done = i < o.step;
     final info = o.timeline[i][1];
     final est = _estimate(o);
@@ -38,10 +41,10 @@ class TrackDetailScreen extends StatelessWidget {
           : (cur ? Center(child: Container(width: 10, height: 10, decoration: const BoxDecoration(color: C.brown, shape: BoxShape.circle))) : null),
     );
     final body = Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(kSteps[i], style: t(15, w: (done || cur) ? FontWeight.w800 : FontWeight.w500, color: (done || cur) ? C.ink : C.muted)),
-      if (info.isNotEmpty || (cur && i == 3))
-        Text(cur && i == 3 ? 'Sedang berjalan · estimasi $est' : info, style: t(12, color: C.muted)),
-      if (cur && i == 3) ...[
+      Text(o.steps[i], style: t(15, w: (done || cur) ? FontWeight.w800 : FontWeight.w500, color: (done || cur) ? C.ink : C.muted)),
+      if (info.isNotEmpty || photo)
+        Text(photo ? 'Sedang berjalan · estimasi $est' : info, style: t(12, color: C.muted)),
+      if (photo) ...[
         const SizedBox(height: 12),
         Row(children: [
           for (var k = 0; k < 3; k++)
@@ -66,12 +69,12 @@ class TrackDetailScreen extends StatelessWidget {
       child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Column(children: [
           circle,
-          if (i < 5) Expanded(child: Container(width: 3, color: i < o.step ? C.green : const Color(0xFFE6D7B5))),
+          if (i < last) Expanded(child: Container(width: 3, color: i < o.step ? C.green : const Color(0xFFE6D7B5))),
         ]),
         const SizedBox(width: 14),
         Expanded(
           child: Container(
-            margin: EdgeInsets.only(bottom: i < 5 ? 14 : 0),
+            margin: EdgeInsets.only(bottom: i < last ? 14 : 0),
             child: body,
           ),
         ),
@@ -87,14 +90,15 @@ class TrackDetailScreen extends StatelessWidget {
           title: 'Lacak pesanan',
           back: true,
           action: Tag(o.label, o.isDone ? C.green : C.gold),
-          bottom: Row(children: [
-            Expanded(child: Btn('Chat admin', () => go(context, ChatScreen(order: o)), light: true, wide: true)),
+          bottom: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            SizedBox(width: 130, child: Btn('Chat admin', () => go(context, ChatScreen(order: o)), light: true, compact: true)),
             if (o.status == St.menungguDp || ready) ...[
-              const SizedBox(width: 10),
-              Expanded(
+              const SizedBox(width: 12),
+              SizedBox(
+                width: 130,
                 child: o.status == St.menungguDp
-                    ? Btn('Bayar DP', () => go(context, PaymentScreen(order: o)), wide: true)
-                    : Btn('Bayar sisa', () => go(context, PaymentScreen(order: o, remainder: true)), wide: true),
+                    ? Btn('Bayar DP', () => go(context, PaymentScreen(order: o)), compact: true)
+                    : Btn('Bayar sisa', () => go(context, PaymentScreen(order: o, remainder: true)), compact: true),
               ),
             ],
           ]),
@@ -104,7 +108,7 @@ class TrackDetailScreen extends StatelessWidget {
             Text('#${o.id} · ${o.qty} pcs · dibuat ${o.created}', style: t(12.5, color: C.muted)),
             const SizedBox(height: 14),
             Row(children: [
-              Expanded(child: Text('${o.step} dari 6 tahap selesai', style: t(12.5, w: FontWeight.w800))),
+              Expanded(child: Text('${o.step} dari ${o.stepCount} tahap selesai', style: t(12.5, w: FontWeight.w800))),
               Text('Estimasi ${_estimate(o)}', style: t(12.5, color: C.brown, w: FontWeight.w800)),
             ]),
             const SizedBox(height: 8),
@@ -116,7 +120,7 @@ class TrackDetailScreen extends StatelessWidget {
             Box(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 6),
-                child: Column(children: [for (var i = 0; i < 6; i++) _step(context, o, i)]),
+                child: Column(children: [for (var i = 0; i < o.stepCount; i++) _step(context, o, i)]),
               ),
             ),
             Box(
@@ -141,6 +145,19 @@ class TrackDetailScreen extends StatelessWidget {
                   ),
                   Text(rp(o.remaining), style: h(24)),
                 ]),
+                Divider(height: 24, color: C.sand),
+                InkWell(
+                  onTap: () => go(context, InvoiceScreen(o)),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    child: Row(children: [
+                      const Icon(Icons.description_outlined, size: 20, color: C.brown),
+                      const SizedBox(width: 12),
+                      Expanded(child: Text('Lihat invoice', style: t(14, w: FontWeight.w700))),
+                      const Icon(Icons.chevron_right, color: C.ink),
+                    ]),
+                  ),
+                ),
               ]),
             ),
           ],

@@ -74,8 +74,10 @@ class ProfileScreen extends StatelessWidget {
             child: _row(null, 'Chat admin', 'Online', () => go(context, ChatScreen(order: s.activeMine)), lead: const ChatIcon(size: 22), last: true),
           ),
           const SizedBox(height: 8),
-          SizedBox(
-            height: 48,
+          Center(
+            child: SizedBox(
+            width: 180,
+            height: 44,
             child: OutlinedButton.icon(
               onPressed: () {
                 goReplaceAll(context, const LoginScreen());
@@ -84,7 +86,7 @@ class ProfileScreen extends StatelessWidget {
               label: Text('Keluar', style: t(14, color: C.brown, w: FontWeight.w700)),
               style: OutlinedButton.styleFrom(side: const BorderSide(color: C.brown), shape: const StadiumBorder()),
             ),
-          ),
+          )),
         ]);
       });
 }

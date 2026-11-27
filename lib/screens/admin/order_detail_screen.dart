@@ -23,7 +23,9 @@ class OrderDetailScreen extends StatelessWidget {
       case St.menungguDesain:
         return Btn('Review desain', () => go(context, DesignReviewScreen(order: o)));
       case St.dibordir:
-        return Btn('Tandai selesai', () => done('Pesanan selesai', () => s.markDone(o)));
+        final more = o.prodStage < o.prodSteps.length - 1;
+        return Btn(more ? 'Lanjut: ${o.prodSteps[o.prodStage + 1]}' : 'Tandai selesai',
+            () => done(more ? 'Pesanan masuk tahap ${o.prodSteps[o.prodStage + 1]}' : 'Pesanan selesai', () => s.advanceStage(o)));
       case St.selesai:
         return Btn('Tandai diambil & lunas', () => done('Pesanan diambil, pembayaran lunas', () => s.markPickedUp(o)));
       case St.diambil:
