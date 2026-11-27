@@ -11,82 +11,84 @@ import 'history_screen.dart';
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
-  Widget _row(IconData? icon, String title, String sub, VoidCallback onTap, {Widget? lead, int? badge, bool last = false}) => InkWell(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          decoration: BoxDecoration(border: last ? null : Border(bottom: BorderSide(color: C.sand))),
-          child: Row(children: [
-            SizedBox(width: 26, child: Center(child: lead ?? Icon(icon, size: 22, color: C.brown))),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(title, style: t(14, w: FontWeight.w700)),
-                const SizedBox(height: 1),
-                Text(sub, style: t(12, color: C.muted)),
+  /// Satu menu: kartu terpisah dengan ikon bulat, teks, dan jarak yang lega.
+  Widget _tile(Widget icon, String title, String sub, VoidCallback onTap) => Padding(
+        padding: const EdgeInsets.fromLTRB(6, 0, 6, 14),
+        child: Material(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(18),
+            onTap: onTap,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: C.ink.withOpacity(.05)),
+              ),
+              child: Row(children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: const BoxDecoration(color: Color(0xFFF6EBD2), shape: BoxShape.circle),
+                  child: Center(child: icon),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(title, style: t(14, w: FontWeight.w700)),
+                    const SizedBox(height: 2),
+                    Text(sub, style: t(12, color: C.muted)),
+                  ]),
+                ),
+                const Icon(Icons.chevron_right, color: C.muted, size: 22),
               ]),
             ),
-            if (badge != null && badge > 0)
-              Container(
-                margin: const EdgeInsets.only(right: 8),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(color: const Color(0xFFF1DFB5), borderRadius: BorderRadius.circular(10)),
-                child: Text('$badge', style: t(11, color: C.brown, w: FontWeight.w800)),
-              ),
-            const Icon(Icons.chevron_right, color: C.ink),
-          ]),
+          ),
         ),
       );
 
   @override
-  Widget build(BuildContext context) => Live((context, s) {
-        return Screen(title: 'Akun', back: true, children: [
-          Box(
-            child: Row(children: [
-              UserAvatar(radius: 24, name: s.userName),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(s.userName, style: t(15, w: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
-                  Text(s.userEmail, style: t(12, color: C.muted), maxLines: 1, overflow: TextOverflow.ellipsis),
-                ]),
+  Widget build(BuildContext context) => Live((context, s) => Screen(title: 'Akun', back: true, children: [
+        Box(
+          child: Row(children: [
+            UserAvatar(radius: 24, name: s.userName),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(s.userName, style: t(15, w: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
+                Text(s.userEmail, style: t(12, color: C.muted), maxLines: 1, overflow: TextOverflow.ellipsis),
+              ]),
+            ),
+            OutlinedButton(
+              onPressed: () => go(context, const EditProfileScreen()),
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: C.brown),
+                shape: const StadiumBorder(),
+                minimumSize: const Size(0, 34),
+                padding: const EdgeInsets.symmetric(horizontal: 18),
               ),
-              OutlinedButton(
-                onPressed: () => go(context, const EditProfileScreen()),
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: C.brown),
-                  shape: const StadiumBorder(),
-                  minimumSize: const Size(0, 34),
-                  padding: const EdgeInsets.symmetric(horizontal: 18),
-                ),
-                child: Text('Edit', style: t(13, color: C.brown, w: FontWeight.w700)),
-              ),
-            ]),
-          ),
-          const Label('Pesanan'),
-          Box(
-            child: Column(children: [
-              _row(Icons.history, 'Riwayat pesanan', 'Pesanan yang sudah selesai', () => go(context, const HistoryScreen()), last: true),
-            ]),
-          ),
-          const Label('Bantuan'),
-          Box(
-            child: _row(null, 'Chat admin', 'Online', () => go(context, ChatScreen(order: s.activeMine)), lead: const ChatIcon(size: 22), last: true),
-          ),
-          const SizedBox(height: 8),
-          Center(
-            child: SizedBox(
+              child: Text('Edit', style: t(13, color: C.brown, w: FontWeight.w700)),
+            ),
+          ]),
+        ),
+        const Label('Pesanan'),
+        _tile(const Icon(Icons.history, size: 20, color: C.brown), 'Riwayat pesanan', 'Pesanan yang sudah selesai',
+            () => go(context, const HistoryScreen())),
+        const Label('Bantuan'),
+        _tile(const ChatIcon(size: 20), 'Chat admin', 'Online', () => go(context, ChatScreen(order: s.activeMine))),
+        const SizedBox(height: 10),
+        Center(
+          child: SizedBox(
             width: 180,
             height: 44,
             child: OutlinedButton.icon(
-              onPressed: () {
-                goReplaceAll(context, const LoginScreen());
-              },
+              onPressed: () => goReplaceAll(context, const LoginScreen()),
               icon: const Icon(Icons.logout, size: 18, color: C.brown),
               label: Text('Keluar', style: t(14, color: C.brown, w: FontWeight.w700)),
               style: OutlinedButton.styleFrom(side: const BorderSide(color: C.brown), shape: const StadiumBorder()),
             ),
-          )),
-        ]);
-      });
+          ),
+        ),
+      ]));
 }

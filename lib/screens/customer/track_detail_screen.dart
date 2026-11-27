@@ -90,17 +90,12 @@ class TrackDetailScreen extends StatelessWidget {
           title: 'Lacak pesanan',
           back: true,
           action: Tag(o.label, o.isDone ? C.green : C.gold),
-          bottom: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            SizedBox(width: 130, child: Btn('Chat admin', () => go(context, ChatScreen(order: o)), light: true, compact: true)),
-            if (o.status == St.menungguDp || ready) ...[
-              const SizedBox(width: 12),
-              SizedBox(
-                width: 130,
-                child: o.status == St.menungguDp
-                    ? Btn('Bayar DP', () => go(context, PaymentScreen(order: o)), compact: true)
-                    : Btn('Bayar sisa', () => go(context, PaymentScreen(order: o, remainder: true)), compact: true),
-              ),
-            ],
+          bottom: Column(mainAxisSize: MainAxisSize.min, children: [
+            if (o.status == St.menungguDp)
+              Btn('Bayar DP', () => go(context, PaymentScreen(order: o)))
+            else if (ready)
+              Btn('Bayar sisa', () => go(context, PaymentScreen(order: o, remainder: true))),
+            HelpLink(order: o),
           ]),
           children: [
             Text(o.title, style: h(24)),

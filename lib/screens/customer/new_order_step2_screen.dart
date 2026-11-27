@@ -81,15 +81,17 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
   final q = TextEditingController();
   final qt = TextEditingController();
   int tab = 0;
-  String? design, bordirDesign;
-  Uint8List? designBytes, bordirBytes;
+  String? get design => d.designName;
+  Uint8List? get designBytes => d.designBytes;
+  String? get bordirDesign => d.bordirName;
+  Uint8List? get bordirBytes => d.bordirBytes;
 
   Future<void> _pickDesign() async {
     final f = await pickFile(ext: kDesignExt);
     if (f != null) {
       setState(() {
-        design = f.name;
-        designBytes = f.isImage ? f.bytes : null;
+        d.designName = f.name;
+        d.designBytes = f.isImage ? f.bytes : null;
         d.hasDesign = true;
       });
     }
@@ -99,8 +101,8 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
     final f = await pickFile(ext: kDesignExt);
     if (f != null) {
       setState(() {
-        bordirDesign = f.name;
-        bordirBytes = f.isImage ? f.bytes : null;
+        d.bordirName = f.name;
+        d.bordirBytes = f.isImage ? f.bytes : null;
         d.hasDesign = true;
       });
     }

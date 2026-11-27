@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 /// Status pesanan. Alurnya: DP -> verifikasi admin -> desain -> bordir -> selesai -> diambil.
@@ -160,6 +161,9 @@ class OrderDraft {
   String bsize = '8 cm', note = '', text = '';
   bool bordir = true, hasDesign = false, ownMaterial = false;
   int itemQty = 0; // jumlah barang (khusus Bordir saja), diisi pelanggan
+  // Berkas yang diunggah tetap ada saat pelanggan bolak-balik antar langkah.
+  String? designName, bordirName;
+  Uint8List? designBytes, bordirBytes;
   Set<String> colors = {'Hitam', 'Merah'};
   Set<String> positions = {};
   Set<String> threads = {'Hitam', 'Kuning'};

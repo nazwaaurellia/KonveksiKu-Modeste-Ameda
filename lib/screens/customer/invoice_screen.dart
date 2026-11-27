@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:printing/printing.dart';
 import '../../core/files.dart';
 import '../../core/invoice_pdf.dart';
 import '../../core/store.dart';
@@ -47,28 +46,20 @@ class InvoiceScreen extends StatelessWidget {
       action: Tag(i.status, ok ? C.green : C.gold),
       bottom: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 320),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            SizedBox(
-              width: double.infinity,
-              height: 46,
-              child: ElevatedButton.icon(
-                onPressed: () => _run(context, (b) async {
-                  final done = await saveBytes(_file, b, mime: 'application/pdf');
-                  if (context.mounted) toast(context, done ? 'Invoice diunduh' : 'Invoice gagal disimpan');
-                }),
-                icon: const Icon(Icons.file_download_outlined, size: 20),
-                label: Text('Unduh PDF', style: t(14, color: Colors.white, w: FontWeight.w700)),
-                style: ElevatedButton.styleFrom(backgroundColor: C.brown, foregroundColor: Colors.white, elevation: 0, shape: const StadiumBorder()),
-              ),
+          constraints: const BoxConstraints(maxWidth: 280),
+          child: SizedBox(
+            width: double.infinity,
+            height: 46,
+            child: ElevatedButton.icon(
+              onPressed: () => _run(context, (b) async {
+                final done = await saveBytes(_file, b, mime: 'application/pdf');
+                if (context.mounted) toast(context, done ? 'Invoice diunduh' : 'Invoice gagal disimpan');
+              }),
+              icon: const Icon(Icons.file_download_outlined, size: 20),
+              label: Text('Unduh PDF', style: t(14, color: Colors.white, w: FontWeight.w700)),
+              style: ElevatedButton.styleFrom(backgroundColor: C.brown, foregroundColor: Colors.white, elevation: 0, shape: const StadiumBorder()),
             ),
-            const SizedBox(height: 10),
-            Row(children: [
-              Expanded(child: _outBtn(Icons.print_outlined, 'Cetak', () => _run(context, (b) => Printing.layoutPdf(onLayout: (_) async => b, name: _file)))),
-              const SizedBox(width: 10),
-              Expanded(child: _outBtn(Icons.share_outlined, 'Bagikan', () => _run(context, (b) => Printing.sharePdf(bytes: b, filename: _file)))),
-            ]),
-          ]),
+          ),
         ),
       ),
       children: [
@@ -81,10 +72,15 @@ class InvoiceScreen extends StatelessWidget {
             boxShadow: const [BoxShadow(color: Color(0x12000000), blurRadius: 14, offset: Offset(0, 4))],
           ),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+              ClipOval(
+                child: Image.asset('assets/images/logo_mark.png', width: 46, height: 46, fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const SizedBox(width: 46, height: 46)),
+              ),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text('Konveksi Maju Jaya', style: t(17, w: FontWeight.w800)),
+                  Text('Modeste Ameda', style: t(17, w: FontWeight.w800)),
                   const SizedBox(height: 2),
                   Text('Bordir, jahit, dan perlengkapan seragam', style: t(12, color: C.muted)),
                 ]),
@@ -126,20 +122,40 @@ class InvoiceScreen extends StatelessWidget {
               ])),
             ),
             const SizedBox(height: 16),
-            Center(child: Text('Terima kasih telah memesan.', style: t(12, color: C.muted))),
+            Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+              Expanded(child: Center(child: Text('Terima kasih telah memesan.', style: t(12, color: C.muted)))),
+              _Stamp(i.status, i.date, ok ? C.green : C.brown),
+            ]),
           ]),
         ),
       ],
     );
   }
+}
 
-  Widget _outBtn(IconData icon, String label, VoidCallback onTap) => SizedBox(
-        height: 44,
-        child: OutlinedButton.icon(
-          onPressed: onTap,
-          icon: Icon(icon, size: 18, color: C.brown),
-          label: Text(label, style: t(13, color: C.brown, w: FontWeight.w700)),
-          style: OutlinedButton.styleFrom(side: const BorderSide(color: C.brown), shape: const StadiumBorder()),
+/// Stempel bundar "Modeste Ameda" dengan status pembayaran.
+class _Stamp extends StatelessWidget {
+  final String status, date;
+  final Color color;
+  const _Stamp(this.status, this.date, this.color);
+  @override
+  Widget build(BuildContext context) => Transform.rotate(
+        angle: -0.2,
+        child: Container(
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: color, width: 2.2)),
+          child: Container(
+            margin: const EdgeInsets.all(5),
+            decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: color, width: .8)),
+            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Text('MODESTE AMEDA', style: TextStyle(fontSize: 7.5, color: color, fontWeight: FontWeight.w800, letterSpacing: .6)),
+              const SizedBox(height: 4),
+              Text(status.toUpperCase(), style: TextStyle(fontSize: 13, color: color, fontWeight: FontWeight.w900)),
+              const SizedBox(height: 4),
+              Text(date, style: TextStyle(fontSize: 7.5, color: color)),
+            ]),
+          ),
         ),
       );
 }

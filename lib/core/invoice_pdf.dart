@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'store.dart';
@@ -41,7 +42,13 @@ Future<Uint8List> buildInvoicePdf(Order o, String email) async {
   const ink = PdfColor.fromInt(0xFF2B1D0E);
   const muted = PdfColor.fromInt(0xFF7A6A55);
   const line = PdfColor.fromInt(0xFFE6D7B5);
-  final doc = pw.Document(title: i.number, author: 'Konveksi Maju Jaya');
+  pw.MemoryImage? logo;
+  try {
+    logo = pw.MemoryImage((await rootBundle.load('assets/images/logo_mark.png')).buffer.asUint8List());
+  } catch (_) {}
+  final okStatus = i.status == 'Lunas';
+  final stampColor = okStatus ? const PdfColor.fromInt(0xFF2E7D5B) : brown;
+  final doc = pw.Document(title: i.number, author: 'Modeste Ameda');
 
   pw.Widget row(String a, String b, {bool bold = false, PdfColor? color}) => pw.Padding(
         padding: const pw.EdgeInsets.symmetric(vertical: 3),
@@ -61,11 +68,15 @@ Future<Uint8List> buildInvoicePdf(Order o, String email) async {
       pageFormat: PdfPageFormat.a4,
       margin: const pw.EdgeInsets.all(40),
       build: (_) => pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
-        pw.Row(crossAxisAlignment: pw.CrossAxisAlignment.start, mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
-          pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
-            pw.Text('Konveksi Maju Jaya', style: pw.TextStyle(fontSize: 18, color: ink, fontWeight: pw.FontWeight.bold)),
-            pw.SizedBox(height: 3),
-            pw.Text('Bordir, jahit, dan perlengkapan seragam', style: const pw.TextStyle(fontSize: 10, color: muted)),
+        pw.Row(crossAxisAlignment: pw.CrossAxisAlignment.center, mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
+          pw.Row(children: [
+            if (logo != null) pw.Image(logo, width: 52, height: 52),
+            if (logo != null) pw.SizedBox(width: 10),
+            pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
+              pw.Text('Modeste Ameda', style: pw.TextStyle(fontSize: 18, color: ink, fontWeight: pw.FontWeight.bold)),
+              pw.SizedBox(height: 3),
+              pw.Text('Bordir, jahit, dan perlengkapan seragam', style: const pw.TextStyle(fontSize: 10, color: muted)),
+            ]),
           ]),
           pw.Text('INVOICE', style: pw.TextStyle(fontSize: 12, color: brown, fontWeight: pw.FontWeight.bold, letterSpacing: 1.5)),
         ]),
@@ -106,7 +117,30 @@ Future<Uint8List> buildInvoicePdf(Order o, String email) async {
           ),
         ),
         pw.SizedBox(height: 16),
-        pw.Center(child: pw.Text('Terima kasih telah memesan.', style: const pw.TextStyle(fontSize: 9, color: muted))),
+        pw.Row(crossAxisAlignment: pw.CrossAxisAlignment.center, children: [
+          pw.Expanded(child: pw.Center(child: pw.Text('Terima kasih telah memesan.', style: const pw.TextStyle(fontSize: 9, color: muted)))),
+          pw.Transform.rotate(
+            angle: -0.2,
+            child: pw.Container(
+              width: 104,
+              height: 104,
+              decoration: pw.BoxDecoration(shape: pw.BoxShape.circle, border: pw.Border.all(color: stampColor, width: 2.2)),
+              child: pw.Container(
+                margin: const pw.EdgeInsets.all(5),
+                decoration: pw.BoxDecoration(shape: pw.BoxShape.circle, border: pw.Border.all(color: stampColor, width: 0.8)),
+                child: pw.Center(
+                  child: pw.Column(mainAxisSize: pw.MainAxisSize.min, children: [
+                    pw.Text('MODESTE AMEDA', style: pw.TextStyle(fontSize: 7, color: stampColor, fontWeight: pw.FontWeight.bold, letterSpacing: 0.6)),
+                    pw.SizedBox(height: 4),
+                    pw.Text(i.status.toUpperCase(), style: pw.TextStyle(fontSize: 13, color: stampColor, fontWeight: pw.FontWeight.bold)),
+                    pw.SizedBox(height: 4),
+                    pw.Text(i.date, style: pw.TextStyle(fontSize: 7, color: stampColor)),
+                  ]),
+                ),
+              ),
+            ),
+          ),
+        ]),
       ]),
     ),
   );
