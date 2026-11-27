@@ -173,7 +173,7 @@ class AppStore extends ChangeNotifier {
   AppStore._();
   static final AppStore I = AppStore._();
 
-  String userName = 'Sari', userEmail = 'sari@email.com';
+  String userName = 'Sari', userEmail = 'sari@email.com', userPhone = '';
   bool isAdmin = false;
   OrderDraft draft = OrderDraft();
   int _next = 143;
@@ -225,6 +225,19 @@ class AppStore extends ChangeNotifier {
     }
     _users[userEmail.toLowerCase()] = v;
     userName = v;
+    notifyListeners();
+  }
+
+  /// Simpan perubahan profil (nama, email, nomor HP).
+  void updateProfile({required String name, required String email, required String phone}) {
+    rename(name);
+    final e = email.trim();
+    if (e.isNotEmpty && e != userEmail) {
+      _users.remove(userEmail.toLowerCase());
+      userEmail = e;
+      _users[e.toLowerCase()] = userName;
+    }
+    userPhone = phone.trim();
     notifyListeners();
   }
 

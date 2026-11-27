@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'dart:ui' show PathMetric;
 import 'package:flutter/material.dart';
 import 'theme.dart';
@@ -237,7 +238,9 @@ class UploadBox extends StatelessWidget {
   final bool attached;
   final VoidCallback onTap;
   final String? fileName;
-  const UploadBox(this.attached, this.onTap, {this.title = 'Unggah desain atau logo', this.sub = 'PNG, JPG, atau file desain', this.fileName, super.key});
+  final Uint8List? preview; // isi gambar yang diunggah (jika berupa gambar)
+  const UploadBox(this.attached, this.onTap,
+      {this.title = 'Unggah desain atau logo', this.sub = 'PNG, JPG, atau file desain', this.fileName, this.preview, super.key});
   @override
   Widget build(BuildContext context) => GestureDetector(
         onTap: onTap,
@@ -247,7 +250,17 @@ class UploadBox extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 26, horizontal: 16),
             child: Column(children: [
-              Icon(attached ? Icons.check_circle : Icons.upload, color: attached ? C.green : C.brown, size: 26),
+              if (attached && preview != null)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: Container(
+                    color: Colors.white,
+                    constraints: const BoxConstraints(maxHeight: 170),
+                    child: Image.memory(preview!, fit: BoxFit.contain, width: double.infinity, height: 170),
+                  ),
+                )
+              else
+                Icon(attached ? Icons.check_circle : Icons.upload, color: attached ? C.green : C.brown, size: 26),
               const SizedBox(height: 8),
               Text(attached ? (fileName ?? 'Berkas dilampirkan') : title,
                   maxLines: 1,

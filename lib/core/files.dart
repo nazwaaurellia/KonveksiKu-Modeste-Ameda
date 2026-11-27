@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'save_stub.dart' if (dart.library.html) 'save_web.dart';
 import 'theme.dart';
 
 /// Berkas hasil pilihan pengguna.
@@ -32,11 +33,10 @@ Future<PickedFile?> pickFile({bool image = false, List<String>? ext}) async {
   }
 }
 
-/// Simpan berkas ke perangkat (dialog simpan / unduhan).
-Future<bool> saveBytes(String name, Uint8List bytes) async {
+/// Simpan berkas ke perangkat (unduhan di web, dialog simpan di ponsel/desktop).
+Future<bool> saveBytes(String name, Uint8List bytes, {String mime = 'image/png'}) async {
   try {
-    final r = await FilePicker.platform.saveFile(dialogTitle: 'Simpan berkas', fileName: name, bytes: bytes);
-    return r != null || true;
+    return await saveBytesImpl(name, bytes, mime);
   } catch (_) {
     return false;
   }

@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import '../../core/files.dart';
 import '../../core/order_ui.dart';
@@ -80,13 +81,26 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
   final q = TextEditingController();
   final qt = TextEditingController();
   int tab = 0;
-  String? design;
+  String? design, bordirDesign;
+  Uint8List? designBytes, bordirBytes;
 
   Future<void> _pickDesign() async {
     final f = await pickFile(ext: kDesignExt);
     if (f != null) {
       setState(() {
         design = f.name;
+        designBytes = f.isImage ? f.bytes : null;
+        d.hasDesign = true;
+      });
+    }
+  }
+
+  Future<void> _pickBordir() async {
+    final f = await pickFile(ext: kDesignExt);
+    if (f != null) {
+      setState(() {
+        bordirDesign = f.name;
+        bordirBytes = f.isImage ? f.bytes : null;
         d.hasDesign = true;
       });
     }
@@ -195,8 +209,9 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
             SizedBox(width: 96, child: Btn('Ganti', () => Navigator.pop(context), compact: true, light: true)),
           ]),
         ),
-        const SectionRow('Desain'),
-        UploadBox(d.hasDesign, _pickDesign, fileName: design),
+        const SectionRow('Desain bordir'),
+        UploadBox(bordirDesign != null, _pickBordir,
+            title: 'Unggah desain bordir', sub: 'Logo atau gambar yang akan dibordir', fileName: bordirDesign, preview: bordirBytes),
         const SizedBox(height: 12),
         PillField('Atau tulis nama / teks untuk dibordir', onChanged: (v) => d.text = v),
         SectionRow('Posisi bordir', trailing: 'Untuk ${d.product.toLowerCase()}'),
@@ -205,7 +220,7 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
         const Label('Ukuran bordir'),
         _bsizeChips(const ['5 cm', '8 cm', '10 cm']),
         SectionRow('Warna benang', trailing: '${d.threads.length} dipilih'),
-        PillField('Cari nama atau kode warna benang', ctrl: qt, search: true, onChanged: (_) => setState(() {})),
+        PillField('Cari warna benang atau kode', ctrl: qt, search: true, onChanged: (_) => setState(() {})),
         if (tHex != null && !tp.any((e) => hexOf(e.$2) == hexOf(tHex)))
           Padding(
             padding: const EdgeInsets.only(top: 12),
@@ -254,10 +269,11 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
       'Warna & ukuran',
       bottom: _totalBar('Lanjut ke pembayaran'),
       children: [
-        const SectionRow('Desain'),
-        UploadBox(d.hasDesign, _pickDesign, fileName: design),
+        SectionRow(const {'jahit': 'Desain pakaian', 'hijab': 'Desain hijab', 'kaoskaki': 'Desain kaos kaki', 'dasi': 'Desain dasi', 'topi': 'Desain topi'}[d.kind] ?? 'Desain'),
+        UploadBox(design != null, _pickDesign,
+            title: 'Unggah desain produk', sub: 'Pola, motif, atau referensi model', fileName: design, preview: designBytes),
         SectionRow(c.colorLabel, trailing: '${d.colors.length} dipilih'),
-        PillField('Cari nama atau kode warna, mis. #1F2A5C', ctrl: q, search: true, onChanged: (_) => setState(() {})),
+        PillField('Cari nama atau kode warna', ctrl: q, search: true, onChanged: (_) => setState(() {})),
         if (canAdd)
           Padding(
             padding: const EdgeInsets.only(top: 12),
@@ -300,7 +316,15 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
           ),
         if (d.bordir) ...[
           Label(c.cardTitle),
-          Box(child: _section(c.card)),
+          Box(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Padding(padding: const EdgeInsets.only(bottom: 10), child: Text('Desain bordir', style: t(12.5, color: C.muted))),
+              UploadBox(bordirDesign != null, _pickBordir,
+                  title: 'Unggah desain bordir', sub: 'Logo atau gambar yang akan dibordir', fileName: bordirDesign, preview: bordirBytes),
+              const SizedBox(height: 18),
+              _section(c.card),
+            ]),
+          ),
         ],
         const Label('Catatan'),
         NoteField(c.noteHint, d.note, (v) => d.note = v),

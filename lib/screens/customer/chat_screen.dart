@@ -87,10 +87,23 @@ class _ChatScreenState extends State<ChatScreen> {
                 decoration: BoxDecoration(border: Border(bottom: BorderSide(color: C.ink.withOpacity(.08)))),
                 child: Row(children: [
                   IconButton(onPressed: () => Navigator.maybePop(context), icon: const Icon(Icons.arrow_back_ios_new, size: 22)),
-                  const CircleAvatar(
-                    radius: 22,
-                    backgroundColor: C.brown,
-                    child: Text('MA', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      border: Border.all(color: const Color(0xFFE6D7B5)),
+                    ),
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/images/logo_mark.png',
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => const Center(
+                          child: Text('MA', style: TextStyle(color: C.brown, fontWeight: FontWeight.w800)),
+                        ),
+                      ),
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../core/files.dart';
@@ -27,10 +28,16 @@ class PaymentScreen extends StatefulWidget {
 class _PaymentScreenState extends State<PaymentScreen> {
   String method = 'Transfer bank', wallet = 'DANA', bank = 'BRI';
   String? proof;
+  Uint8List? proofBytes;
 
   Future<void> _pickProof() async {
     final f = await pickFile(ext: kProofExt);
-    if (f != null) setState(() => proof = f.name);
+    if (f != null) {
+      setState(() {
+        proof = f.name;
+        proofBytes = f.isImage ? f.bytes : null;
+      });
+    }
   }
 
   Future<void> _saveQr() async {
@@ -238,6 +245,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 16),
               child: Column(children: [
+                if (proofBytes != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: Container(color: Colors.white, child: Image.memory(proofBytes!, height: 170, width: double.infinity, fit: BoxFit.contain)),
+                    ),
+                  ),
                 Text(proof != null ? '✓ $proof' : 'Unggah bukti pembayaran',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
