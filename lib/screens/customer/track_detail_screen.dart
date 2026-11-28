@@ -4,7 +4,6 @@ import '../../core/store.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
 import 'chat_screen.dart';
-import '../../core/price_ui.dart';
 import 'invoice_screen.dart';
 import 'payment_screen.dart';
 
@@ -141,20 +140,6 @@ class TrackDetailScreen extends StatelessWidget {
                   ),
                   Text(rp(o.remaining), style: h(24)),
                 ]),
-                Divider(height: 24, color: C.sand),
-                InkWell(
-                  onTap: () => showPriceSheet(context,
-                      subtitle: '${o.title} · ${o.qty} pcs', lines: orderLines(o), qty: o.qty, dp: o.dp),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 2),
-                    child: Row(children: [
-                      const Icon(Icons.sell_outlined, size: 20, color: C.brown),
-                      const SizedBox(width: 12),
-                      Expanded(child: Text('Lihat rincian harga', style: t(14, w: FontWeight.w700))),
-                      const Icon(Icons.chevron_right, color: C.ink),
-                    ]),
-                  ),
-                ),
                 Divider(height: 24, color: C.sand),
                 InkWell(
                   onTap: () => go(context, InvoiceScreen(o)),

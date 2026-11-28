@@ -14,10 +14,11 @@ String _sentence(String s) => s.isEmpty ? s : s[0].toUpperCase() + s.substring(1
 /// Isi invoice yang dipakai layar dan PDF.
 class InvoiceInfo {
   final String number, date, orderNo, customer, email, item, detail, qtyLine, status;
-  final List<({String label, String sub, String qty, int amount})> lines;
+  final int qty;
+  final List<({String label, String sub, String perPcs, int amount})> lines;
   final int total, dpPaid, remaining;
   InvoiceInfo._(this.number, this.date, this.orderNo, this.customer, this.email, this.item, this.detail, this.qtyLine,
-      this.status, this.total, this.dpPaid, this.remaining, this.lines);
+      this.status, this.total, this.dpPaid, this.remaining, this.qty, this.lines);
 
   factory InvoiceInfo.of(Order o, String email) => InvoiceInfo._(
         'INV-${o.id}',
@@ -32,8 +33,9 @@ class InvoiceInfo {
         o.total,
         o.dpPaid,
         o.remaining,
+        o.qty,
         [
-          for (final l in orderLines(o)) (label: l.label, sub: l.sub, qty: '${o.qty} pcs × ${rp(l.unit)}', amount: l.unit * o.qty),
+          for (final l in orderLines(o)) (label: l.label, sub: l.sub, perPcs: '${rp(l.unit)} / pcs', amount: l.unit * o.qty),
         ],
       );
 
@@ -99,17 +101,25 @@ Future<Uint8List> buildInvoicePdf(Order o, String email) async {
         pw.SizedBox(height: 2),
         pw.Text(i.detail, style: const pw.TextStyle(fontSize: 10, color: muted)),
         pw.SizedBox(height: 6),
-        for (final l in i.lines)
+        div(),
+        label('RINCIAN HARGA · ${i.qty} PCS'),
+        pw.SizedBox(height: 2),
+        for (var k = 0; k < i.lines.length; k++) ...[
+          if (k > 0) pw.Divider(color: line, height: 10),
           pw.Padding(
-            padding: const pw.EdgeInsets.symmetric(vertical: 3),
+            padding: const pw.EdgeInsets.symmetric(vertical: 4),
             child: pw.Row(crossAxisAlignment: pw.CrossAxisAlignment.start, mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
               pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
-                pw.Text(l.sub.isEmpty ? l.label : '${l.label} · ${l.sub}', style: pw.TextStyle(fontSize: 11, color: ink, fontWeight: pw.FontWeight.bold)),
-                pw.Text(l.qty, style: const pw.TextStyle(fontSize: 9, color: muted)),
+                pw.Text(i.lines[k].label, style: pw.TextStyle(fontSize: 11.5, color: ink, fontWeight: pw.FontWeight.bold)),
+                pw.Text(i.lines[k].sub, style: pw.TextStyle(fontSize: 9.5, color: i.lines[k].amount == 0 ? const PdfColor.fromInt(0xFF2E7D5B) : muted)),
               ]),
-              pw.Text(rp(l.amount), style: pw.TextStyle(fontSize: 11, color: ink, fontWeight: pw.FontWeight.bold)),
+              pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.end, children: [
+                pw.Text(rp(i.lines[k].amount), style: pw.TextStyle(fontSize: 11.5, color: ink, fontWeight: pw.FontWeight.bold)),
+                pw.Text(i.lines[k].perPcs, style: const pw.TextStyle(fontSize: 9.5, color: muted)),
+              ]),
             ]),
           ),
+        ],
         div(),
         row('Total', rp(i.total), bold: true, color: ink),
         if (i.dpPaid > 0) row('DP dibayar', '- ${rp(i.dpPaid)}'),

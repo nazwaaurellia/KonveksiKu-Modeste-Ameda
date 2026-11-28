@@ -101,21 +101,27 @@ class InvoiceScreen extends StatelessWidget {
             const SizedBox(height: 2),
             Text(i.detail, style: t(12.5, color: C.muted)),
             const SizedBox(height: 8),
-            for (final l in i.lines)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Expanded(
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(l.sub.isEmpty ? l.label : '${l.label} · ${l.sub}', style: t(13, w: FontWeight.w800)),
-                      const SizedBox(height: 2),
-                      Text(l.qty, style: t(12, color: C.muted)),
-                    ]),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(rp(l.amount), style: t(13, w: FontWeight.w800)),
+            _div(),
+            _cap('RINCIAN HARGA · ${i.qty} PCS'),
+            for (var k = 0; k < i.lines.length; k++) ...[
+              if (k > 0) Divider(height: 22, color: C.sand),
+              Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Expanded(
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(i.lines[k].label, style: t(15, w: FontWeight.w800)),
+                    const SizedBox(height: 2),
+                    Text(i.lines[k].sub,
+                        style: t(12, color: i.lines[k].amount == 0 ? C.green : C.muted, w: i.lines[k].amount == 0 ? FontWeight.w700 : FontWeight.w500)),
+                  ]),
+                ),
+                const SizedBox(width: 10),
+                Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                  Text(rp(i.lines[k].amount), style: t(15, w: FontWeight.w800)),
+                  const SizedBox(height: 2),
+                  Text(i.lines[k].perPcs, style: t(12, color: C.muted)),
                 ]),
-              ),
+              ]),
+            ],
             _div(),
             _kv('Total', rp(i.total), bold: true),
             if (i.dpPaid > 0) _kv('DP dibayar · ${order.created}', '− ${rp(i.dpPaid)}'),

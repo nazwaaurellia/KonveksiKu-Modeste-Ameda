@@ -21,14 +21,31 @@ List<PriceLine> draftLines(OrderDraft d) => [
       if (d.bordirUnit > 0) PriceLine('Bordir', '${d.positions.join(', ')} · ${d.bsize}', d.bordirUnit, C.gold),
     ];
 
-/// Rincian dari pesanan yang sudah dibuat (dipakai di admin dan halaman pelanggan).
+String _meterText(double m) => '±${m.toString().replaceAll('.0', '').replaceAll('.', ',')} m per pcs';
+
+/// Rincian dari pesanan yang sudah dibuat (dipakai di admin, invoice, dan halaman pelanggan).
+/// Pesanan lama yang belum punya rincian dihitung dari daftar harga agar totalnya tetap sama.
 List<PriceLine> orderLines(Order o) {
-  final l = [
-    if (o.bahanUnit > 0 || o.bahanSub.isNotEmpty) PriceLine('Bahan', o.bahanSub, o.bahanUnit, C.green),
-    if (o.jahitUnit > 0) PriceLine(o.kind == 'jahit' ? 'Ongkos jahit' : 'Ongkos produksi', o.jahitSub, o.jahitUnit, C.brown),
-    if (o.bordirUnit > 0) PriceLine('Bordir', o.bordirSub, o.bordirUnit, C.gold),
+  final saved = o.bahanUnit > 0 || o.jahitUnit > 0 || o.bordirUnit > 0 || o.bahanSub.isNotEmpty;
+  if (saved) {
+    return [
+      if (o.bahanUnit > 0 || o.bahanSub.isNotEmpty) PriceLine('Bahan', o.bahanSub, o.bahanUnit, C.green),
+      if (o.jahitUnit > 0) PriceLine(o.kind == 'jahit' ? 'Ongkos jahit' : 'Ongkos produksi', o.jahitSub, o.jahitUnit, C.brown),
+      if (o.bordirUnit > 0) PriceLine('Bordir', o.bordirSub, o.bordirUnit, C.gold),
+    ];
+  }
+  if (o.kind == 'bordir') {
+    return [PriceLine('Bordir', o.detail.isNotEmpty ? o.detail : o.bsize, o.unit, C.gold)];
+  }
+  final bordir = o.withBordir ? (kPrices.bordir[o.bsize] ?? 0) : 0;
+  final jahit = kPrices.sewFee[o.product] ?? 0;
+  final bahan = o.unit - jahit - bordir;
+  if (bahan < 0) return [PriceLine('Harga satuan', o.title, o.unit, C.brown)];
+  return [
+    if (bahan > 0) PriceLine('Bahan', '${o.fabric} · ${_meterText(kPrices.meters[o.product] ?? 1.5)}', bahan, C.green),
+    if (jahit > 0) PriceLine(o.kind == 'jahit' ? 'Ongkos jahit' : 'Ongkos produksi', o.product, jahit, C.brown),
+    if (bordir > 0) PriceLine('Bordir', o.bsize, bordir, C.gold),
   ];
-  return l.isEmpty ? [PriceLine('Harga satuan', o.title, o.unit, C.brown)] : l;
 }
 
 /// Tautan "Lihat rincian harga ›".
