@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../core/files.dart';
 import '../../core/order_ui.dart';
+import '../../core/price_ui.dart';
 import '../../core/store.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
@@ -211,6 +212,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
               const SizedBox(height: 8),
               Text('Sisa ${rp(total - amount)} dibayar saat pesanan selesai.', style: t(13, color: C.muted)),
             ],
+            PriceLink(() => showPriceSheet(
+                  context,
+                  subtitle: o != null ? '${o.title} · $qty pcs' : (d.kind == 'bordir' ? 'Bordir · ${d.product} · $qty pcs' : '${d.product} · ${d.ownMaterial ? 'bahan sendiri' : d.fabric} · $qty ${d.unitName}'),
+                  lines: o != null ? orderLines(o) : draftLines(d),
+                  qty: qty,
+                  dp: o?.dp ?? d.dp,
+                )),
           ]),
         ),
         const Label('Metode pembayaran'),

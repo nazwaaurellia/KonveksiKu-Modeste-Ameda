@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/price_ui.dart';
 import '../../core/store.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
@@ -52,6 +53,13 @@ class OrderDetailScreen extends StatelessWidget {
                 _row('Warna', o.colors),
                 _row('Ukuran bordir', o.bsize),
                 _row('Operator', o.operator),
+              ]),
+            ),
+            Box(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('Rincian harga', style: t(12, w: FontWeight.w800)),
+                const SizedBox(height: 6),
+                for (final l in orderLines(o)) _row('${l.label}${l.sub.isEmpty ? '' : ' · ${l.sub}'}', rp(l.unit * o.qty)),
               ]),
             ),
             Box(

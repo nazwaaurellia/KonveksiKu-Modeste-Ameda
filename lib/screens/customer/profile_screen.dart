@@ -78,16 +78,13 @@ class ProfileScreen extends StatelessWidget {
         const Label('Bantuan'),
         _tile(const ChatIcon(size: 20), 'Chat admin', 'Online', () => go(context, ChatScreen(order: s.activeMine))),
         const SizedBox(height: 10),
-        Center(
-          child: SizedBox(
-            width: 180,
-            height: 44,
-            child: OutlinedButton.icon(
-              onPressed: () => goReplaceAll(context, const LoginScreen()),
-              icon: const Icon(Icons.logout, size: 18, color: C.brown),
-              label: Text('Keluar', style: t(14, color: C.brown, w: FontWeight.w700)),
-              style: OutlinedButton.styleFrom(side: const BorderSide(color: C.brown), shape: const StadiumBorder()),
-            ),
+        SizedBox(
+          height: 52,
+          child: OutlinedButton.icon(
+            onPressed: () => goReplaceAll(context, const LoginScreen()),
+            icon: const Icon(Icons.logout, size: 20, color: C.red),
+            label: Text('Keluar', style: t(15, color: C.red, w: FontWeight.w800)),
+            style: OutlinedButton.styleFrom(side: const BorderSide(color: C.red, width: 1.6), shape: const StadiumBorder()),
           ),
         ),
       ]));

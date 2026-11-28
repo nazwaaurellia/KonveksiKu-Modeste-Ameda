@@ -9,6 +9,29 @@ const kBase = {'Kemeja': 85000, 'Kaos': 55000, 'Seragam': 90000, 'Jaket': 150000
 const kBordir = {'5 cm': 5000, '8 cm': 8000, '10 cm': 12000};
 /// Harga bordir per posisi untuk semua ukuran di form pelanggan.
 const kBordirAll = {'2 cm': 3000, '3 cm': 4000, '4 cm': 4500, '5 cm': 5000, '6 cm': 6000, '8 cm': 8000, '10 cm': 12000};
+/// Daftar harga yang dipakai form pelanggan. Admin dapat mengubah isinya
+/// (harga kain per meter, kebutuhan meter, ongkos jahit, harga bordir).
+class PriceBook {
+  final Map<String, int> fabricPerM = {
+    'Polyester': 25000, 'Katun': 30000, 'Drill': 28000, 'CVC': 32000, 'Toyobo': 30000, 'Fleece': 45000, 'Denim': 55000,
+    'Baby terry': 38000, 'Lacoste': 42000, 'Rayon': 30000, 'Satin': 35000, 'Voal': 35000, 'Paris': 38000, 'Sifon': 32000,
+    'Jersey': 34000, 'Wolfis': 30000, 'Ceruty': 40000, 'Canvas': 40000, 'Rafael': 30000, 'Taslan': 28000, 'Jaring': 22000,
+    'Microfiber': 30000, 'Rajut': 35000, 'Wol': 50000, 'Bambu': 40000, 'Katun + spandex': 36000, 'Nilon': 30000,
+  };
+  final Map<String, double> meters = {
+    'Seragam': 2.0, 'Kemeja': 1.5, 'Kaos': 1.2, 'Jaket': 2.5, 'Rompi': 1.2, 'Batik': 2.0,
+    'Topi': 0.4, 'Dasi': 0.5, 'Hijab': 1.2, 'Kaos Kaki': 0.3, 'Tas': 0.8,
+  };
+  final Map<String, int> sewFee = {
+    'Seragam': 40000, 'Kemeja': 35000, 'Kaos': 25000, 'Jaket': 60000, 'Rompi': 30000, 'Batik': 45000,
+    'Topi': 20000, 'Dasi': 15000, 'Hijab': 15000, 'Kaos Kaki': 8000, 'Tas': 30000,
+  };
+  final Map<String, int> bordir = {...kBordirAll};
+  int fabric(String f) => fabricPerM[f] ?? 30000;
+}
+
+final kPrices = PriceBook();
+
 const kSteps = ['Pesanan diterima', 'DP terverifikasi', 'Desain disetujui', 'Dibordir', 'Selesai', 'Siap diambil'];
 const kMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 
@@ -23,6 +46,9 @@ class Order {
   String detail; // ringkasan detail (posisi bordir, bahan, warna) untuk invoice
   bool withBordir;
   int prodStage; // tahap produksi yang sedang berjalan (0 = pertama)
+  // Rincian harga per pcs (tersimpan saat pesanan dibuat; dipakai pelanggan & admin)
+  int bahanUnit, jahitUnit, bordirUnit;
+  String bahanSub, jahitSub, bordirSub;
 
   Order({
     required this.id,
@@ -47,6 +73,12 @@ class Order {
     this.detail = '',
     this.withBordir = true,
     this.prodStage = 0,
+    this.bahanUnit = 0,
+    this.jahitUnit = 0,
+    this.bordirUnit = 0,
+    this.bahanSub = '',
+    this.jahitSub = '',
+    this.bordirSub = '',
   });
 
   int get total => qty * unit;
@@ -186,9 +218,12 @@ class OrderDraft {
 
   bool get withBordir => !jahit || bordir;
   int get posCount => positions.isEmpty ? 1 : positions.length;
-  int get bordirUnit => withBordir ? (kBordirAll[bsize] ?? 6000) * posCount : 0;
-  int get baseUnit => jahit ? ((kBase[product] ?? 0) * (ownMaterial ? 0.6 : 1)).round() : 0;
-  int get unit => baseUnit + bordirUnit;
+  double get _meters => kPrices.meters[product] ?? 1.5;
+  String get meterText => '±${_meters.toString().replaceAll('.0', '').replaceAll('.', ',')} m per pcs';
+  int get bahanUnit => (!jahit || ownMaterial) ? 0 : (kPrices.fabric(fabric) * _meters).round();
+  int get jahitUnit => jahit ? (kPrices.sewFee[product] ?? 30000) : 0;
+  int get bordirUnit => withBordir ? (kPrices.bordir[bsize] ?? 6000) * posCount : 0;
+  int get unit => bahanUnit + jahitUnit + bordirUnit;
   int get total => unit * qty;
   int get dp => total ~/ 2;
 
@@ -224,7 +259,7 @@ class AppStore extends ChangeNotifier {
   final Map<String, String> _users = {};
 
   final List<Order> orders = [
-    Order(id: 'BK-0142', title: 'Seragam PKK', customer: 'Sari', product: 'Seragam', service: 'Bordir Saja', fabric: 'Bahan sendiri', detail: 'Dada kiri · 8 cm · benang hitam dan kuning', qty: 48, unit: 8000, status: St.dibordir, dpPaid: 192000, paidWeek: 4, operator: 'Dani', created: '10 Nov', note: 'Logo di dada kiri, benang emas agak tebal.'),
+    Order(id: 'BK-0142', title: 'Seragam PKK', customer: 'Sari', product: 'Seragam', service: 'Bordir Saja', fabric: 'Bahan sendiri', detail: 'Dada kiri · 8 cm · benang hitam dan kuning', bordirUnit: 8000, bordirSub: 'Dada kiri · 8 cm', qty: 48, unit: 8000, status: St.dibordir, dpPaid: 192000, paidWeek: 4, operator: 'Dani', created: '10 Nov', note: 'Logo di dada kiri, benang emas agak tebal.'),
     Order(id: 'BK-0141', title: 'Topi komunitas', customer: 'Sari', product: 'Topi', service: 'Bordir Saja', fabric: 'Bahan sendiri', qty: 100, unit: 8000, status: St.menungguDp, created: '12 Nov'),
     Order(id: 'BK-0139', title: 'Jaket angkatan', customer: 'Sari', product: 'Jaket', qty: 30, unit: 90000, status: St.diambil, dpPaid: 2700000, paidWeek: 1, operator: 'Rina', created: '28 Okt'),
     Order(id: 'BK-0138', title: 'Tas seminar', customer: 'Sari', product: 'Tas', qty: 60, unit: 60000, status: St.selesai, dpPaid: 1800000, paidWeek: 3, operator: 'Dani', created: '5 Nov'),
@@ -316,6 +351,12 @@ class AppStore extends ChangeNotifier {
       note: d.note,
       qty: d.qty,
       unit: d.unit,
+      bahanUnit: d.bahanUnit,
+      jahitUnit: d.jahitUnit,
+      bordirUnit: d.bordirUnit,
+      bahanSub: '${d.fabric} · ${d.meterText}',
+      jahitSub: d.product,
+      bordirSub: '${d.positions.join(', ')} · ${d.bsize}',
       hasDesign: d.hasDesign,
       withBordir: d.withBordir,
       detail: d.kind == 'bordir'

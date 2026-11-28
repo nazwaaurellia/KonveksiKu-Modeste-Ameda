@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import '../../core/files.dart';
 import '../../core/order_ui.dart';
+import '../../core/price_ui.dart';
 import '../../core/store.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
@@ -23,17 +24,17 @@ class _Cfg {
 const _cfg = <String, _Cfg>{
   'jahit': _Cfg('Warna', 'Isi jumlah tiap ukuran untuk setiap warna.',
       [('S', null), ('M', null), ('L', null), ('XL', null), ('XXL', null)], [4, 8, 8, 4, 0], '+ Ukuran lain (XS, 3XL, anak)',
-      'Mis. posisi logo, nama di dada', 'Bordir', [
+      'Tulis permintaan khusus, mis. model kerah atau panjang lengan', 'Bordir', [
         ('Posisi (bisa lebih dari satu)', 'pos', ['Dada kiri']),
         ('Ukuran bordir', 'bsize', ['5 cm', '8 cm', '10 cm']),
       ]),
   'hijab': _Cfg('Warna hijab', 'Isi jumlah tiap ukuran untuk setiap warna. Ukuran segi empat adalah sisi × sisi.',
       [('Anak', '90 × 90 cm'), ('Standar', '110 × 110 cm'), ('Besar', '120 × 120 cm')], [6, 20, 4], '+ Ukuran lain (sisi × sisi)',
-      'Mis. logo di pojok kanan bawah, benang emas', 'Bordir hijab',
+      'Tulis permintaan khusus, mis. warna benang tepi atau ukuran jahitan', 'Bordir hijab',
       [('Posisi (bisa lebih dari satu)', 'pos', ['Pojok depan', 'Tepi bawah', 'Tengah depan']), ('Ukuran bordir', 'bsize', ['2 cm', '3 cm', '5 cm'])]),
   'kaoskaki': _Cfg('Warna kaos kaki', 'Isi jumlah pasang tiap ukuran untuk setiap warna.',
       [('Anak', 'Ukuran sepatu 28–34'), ('S', 'Ukuran sepatu 35–38'), ('M', 'Ukuran sepatu 39–42'), ('L', 'Ukuran sepatu 43–46')],
-      [4, 6, 8, 6], '+ Ukuran lain', 'Mis. logo di sisi luar, garis warna emas', 'Logo kaos kaki', [
+      [4, 6, 8, 6], '+ Ukuran lain', 'Tulis permintaan khusus, mis. tinggi garis atau letak logo', 'Logo kaos kaki', [
         ('Teknik logo', 'logoTech', ['Rajut (tenun)', 'Bordir', 'Sablon']),
         ('Posisi (bisa lebih dari satu)', 'pos', ['Pergelangan', 'Sisi luar', 'Punggung kaki', 'Telapak']),
         ('Ukuran logo', 'bsize', ['2 cm', '3 cm', '4 cm']),
@@ -41,12 +42,12 @@ const _cfg = <String, _Cfg>{
       pre: [('Garis di ujung atas', 'stripes', ['Tanpa garis', '1 garis', '2 garis', '3 garis'])]),
   'dasi': _Cfg('Warna dasi', 'Isi jumlah tiap ukuran untuk setiap warna. Ukuran dasi adalah panjang × lebar.',
       [('Dewasa', '± 145 × 8 cm'), ('Remaja', '± 120 × 7 cm'), ('Anak', '± 90 × 6 cm')], [12, 0, 3], '+ Ukuran lain (panjang × lebar)',
-      'Mis. logo di ujung bawah, garis warna emas', 'Bordir logo', [
+      'Tulis permintaan khusus, mis. lebar dasi atau warna garis', 'Bordir logo', [
         ('Posisi (bisa lebih dari satu)', 'pos', ['Ujung bawah', 'Bagian tengah', 'Berulang']),
         ('Ukuran bordir', 'bsize', ['3 cm', '5 cm', '8 cm']),
       ]),
   'topi': _Cfg('Warna topi', 'Isi jumlah tiap ukuran untuk setiap warna.', [('Dewasa', null), ('Anak', null)], [20, 4], null,
-      'Mis. logo di tengah depan, tulisan di belakang', 'Bordir topi', [
+      'Tulis permintaan khusus, mis. tinggi topi atau warna jahitan', 'Bordir topi', [
         ('Posisi (bisa lebih dari satu)', 'pos', ['Depan', 'Samping kiri', 'Samping kanan', 'Belakang']),
         ('Jenis bordir', 'bordirType', ['Datar', 'Timbul (3D)']),
         ('Ukuran bordir', 'bsize', ['5 cm', '6 cm', '8 cm']),
@@ -123,6 +124,16 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
     super.dispose();
   }
 
+  void _showPrice() => showPriceSheet(
+        context,
+        subtitle: d.kind == 'bordir'
+            ? 'Bordir · ${d.product} · ${d.qty} pcs'
+            : '${d.product} · ${d.ownMaterial ? 'bahan sendiri' : d.fabric} · ${d.qty} ${d.unitName}',
+        lines: draftLines(d),
+        qty: d.qty,
+        dp: d.dp,
+      );
+
   void _next() {
     go(context, const PaymentScreen());
   }
@@ -167,7 +178,7 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
           Text('Total ${d.qty} ${d.unitName} · estimasi', style: t(12, color: C.muted)),
           Text(rp(d.total), style: h(20)),
         ]),
-        const SizedBox(height: 10),
+        PriceLink(_showPrice),
         Btn(button, d.qty > 0 ? _next : null),
       ]);
 
@@ -195,7 +206,7 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
           Text('Estimasi total · ${d.qty} pcs', style: t(12.5, w: FontWeight.w800)),
           Text(rp(d.total), style: h(20)),
         ]),
-        const SizedBox(height: 10),
+        PriceLink(_showPrice),
         Btn('Lanjut ke pembayaran', d.qty > 0 ? _next : null),
       ]),
       children: [
@@ -246,7 +257,7 @@ class _NewOrderStep2ScreenState extends State<NewOrderStep2Screen> {
           ]),
         ),
         const Label('Catatan'),
-        NoteField('Mis. logo di dada kiri, benang emas', d.note, (v) => d.note = v),
+        NoteField('Tulis permintaan khusus, mis. warna benang atau letak tulisan', d.note, (v) => d.note = v),
       ],
     );
   }
