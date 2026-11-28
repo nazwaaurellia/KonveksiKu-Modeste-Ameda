@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'price_ui.dart';
 import 'store.dart';
 import 'widgets.dart' show rp;
 
@@ -13,9 +14,10 @@ String _sentence(String s) => s.isEmpty ? s : s[0].toUpperCase() + s.substring(1
 /// Isi invoice yang dipakai layar dan PDF.
 class InvoiceInfo {
   final String number, date, orderNo, customer, email, item, detail, qtyLine, status;
+  final List<({String label, String sub, String qty, int amount})> lines;
   final int total, dpPaid, remaining;
   InvoiceInfo._(this.number, this.date, this.orderNo, this.customer, this.email, this.item, this.detail, this.qtyLine,
-      this.status, this.total, this.dpPaid, this.remaining);
+      this.status, this.total, this.dpPaid, this.remaining, this.lines);
 
   factory InvoiceInfo.of(Order o, String email) => InvoiceInfo._(
         'INV-${o.id}',
@@ -30,6 +32,9 @@ class InvoiceInfo {
         o.total,
         o.dpPaid,
         o.remaining,
+        [
+          for (final l in orderLines(o)) (label: l.label, sub: l.sub, qty: '${o.qty} pcs × ${rp(l.unit)}', amount: l.unit * o.qty),
+        ],
       );
 
   String get dpLabel => 'DP dibayar';
@@ -94,7 +99,17 @@ Future<Uint8List> buildInvoicePdf(Order o, String email) async {
         pw.SizedBox(height: 2),
         pw.Text(i.detail, style: const pw.TextStyle(fontSize: 10, color: muted)),
         pw.SizedBox(height: 6),
-        row(i.qtyLine, rp(i.total), bold: true),
+        for (final l in i.lines)
+          pw.Padding(
+            padding: const pw.EdgeInsets.symmetric(vertical: 3),
+            child: pw.Row(crossAxisAlignment: pw.CrossAxisAlignment.start, mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
+              pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
+                pw.Text(l.sub.isEmpty ? l.label : '${l.label} · ${l.sub}', style: pw.TextStyle(fontSize: 11, color: ink, fontWeight: pw.FontWeight.bold)),
+                pw.Text(l.qty, style: const pw.TextStyle(fontSize: 9, color: muted)),
+              ]),
+              pw.Text(rp(l.amount), style: pw.TextStyle(fontSize: 11, color: ink, fontWeight: pw.FontWeight.bold)),
+            ]),
+          ),
         div(),
         row('Total', rp(i.total), bold: true, color: ink),
         if (i.dpPaid > 0) row('DP dibayar', '- ${rp(i.dpPaid)}'),

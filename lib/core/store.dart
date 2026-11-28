@@ -354,7 +354,7 @@ class AppStore extends ChangeNotifier {
       bahanUnit: d.bahanUnit,
       jahitUnit: d.jahitUnit,
       bordirUnit: d.bordirUnit,
-      bahanSub: '${d.fabric} · ${d.meterText}',
+      bahanSub: !d.jahit ? '' : (d.ownMaterial ? 'Bawa bahan sendiri' : '${d.fabric} · ${d.meterText}'),
       jahitSub: d.product,
       bordirSub: '${d.positions.join(', ')} · ${d.bsize}',
       hasDesign: d.hasDesign,
